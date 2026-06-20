@@ -1,13 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Button } from "./button";
-import { Plus, Loader2 } from "lucide-react";
+import { Plus, Loader2, Sparkles } from "lucide-react";
 
 const meta: Meta<typeof Button> = {
   title: "Components/Button",
   component: Button,
   tags: ["autodocs"],
   argTypes: {
-    variant: { control: "select", options: ["default", "destructive", "outline", "secondary", "ghost", "link"] },
+    variant: { control: "select", options: ["default", "destructive", "outline", "secondary", "ghost", "link", "ai"] },
     size: { control: "select", options: ["default", "sm", "lg", "icon"] },
     disabled: { control: "boolean" },
   },
@@ -25,6 +25,7 @@ export const AllVariants: Story = {
       {(["default", "destructive", "outline", "secondary", "ghost", "link"] as const).map((v) => (
         <Button key={v} variant={v}>{v}</Button>
       ))}
+      <Button variant="ai"><Sparkles /> Ask Albus</Button>
     </div>
   ),
 };

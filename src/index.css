@@ -63,6 +63,12 @@
     --brand-coral: 350 83% 58%;        /* #ED3B5B */
     --brand-violet: 258 56% 60%;
     --brand-purple-muted: 245 16% 65%; /* #9896B8 */
+
+    /* AI accent — a violet-shifted cousin of --primary, not a foreign color.
+       Used for Albus/AI actions so they read as "this app" but distinct
+       from regular brand-colored CTAs. */
+    --ai: 258 60% 52%;
+    --ai-foreground: 0 0% 100%;
   }
 
   .dark {
@@ -123,6 +129,9 @@
     --brand-coral: 350 83% 60%;
     --brand-violet: 258 56% 65%;
     --brand-purple-muted: 245 16% 65%;
+
+    --ai: 258 65% 66%;
+    --ai-foreground: 0 0% 100%;
   }
 }
 
@@ -164,6 +173,8 @@
   --warning-foreground: 0 0% 100%;
   --info: 214 80% 58%;
   --info-foreground: 0 0% 100%;
+  --ai: 258 85% 70%;
+  --ai-foreground: 0 0% 100%;
 }
 
 /* ── Theme: Warm Sand ────────────────────────────────────────────
@@ -204,6 +215,11 @@
   --warning-foreground: 0 0% 100%;
   --info: 205 65% 38%;
   --info-foreground: 0 0% 100%;
+  /* Warm Sand's AI cousin rotates toward wine/berry instead of violet —
+     violet would clash with the warm-earth palette. Same idea, different
+     direction around the wheel. */
+  --ai: 332 60% 38%;
+  --ai-foreground: 0 0% 100%;
 }
 
 @layer base {

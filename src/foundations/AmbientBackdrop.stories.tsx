@@ -63,10 +63,7 @@ export const DashboardComposition: Story = {
             <CardDescription>Summarize this week's activity</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button
-              variant="default"
-              className="w-full bg-gradient-to-b from-foreground to-foreground/90 text-background hover:to-foreground/95"
-            >
+            <Button variant="ai" className="w-full">
               <Sparkles /> Ask AI to start
             </Button>
           </CardContent>
@@ -74,8 +71,9 @@ export const DashboardComposition: Story = {
       </div>
 
       <p style={{ fontSize: 12, color: "hsl(var(--muted-foreground))", marginTop: 8 }}>
-        Note the "Ask Albus" button uses foreground/background instead of the brand primary — AI actions get their own
-        visual language so they're recognizable anywhere in the app, distinct from regular brand-colored CTAs.
+        The "Ask Albus" button uses the new <code>ai</code> variant — a gradient from your actual brand primary toward
+        a violet-shifted cousin color (<code>--ai</code>). It's recognizably "this app," not a generic purple, but
+        still visually distinct from a regular brand-colored CTA.
       </p>
     </div>
   ),

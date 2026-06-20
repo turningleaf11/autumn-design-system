@@ -17,11 +17,15 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        // AI/Albus actions — a gradient FROM the brand primary TOWARD a violet-
+        // shifted cousin color (--ai). Reads as "this app", not a foreign purple,
+        // and stays visually distinct from the regular primary CTA.
+        ai: "bg-gradient-to-b from-primary to-ai text-ai-foreground shadow-sm hover:shadow-md hover:-translate-y-0.5 hover:to-ai/90 active:translate-y-0 active:scale-[0.98]",
       },
       size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-9 px-3",
-        lg: "h-11 px-8",
+        default: "h-10 px-5 py-2",
+        sm: "h-9 px-4",
+        lg: "h-11 px-9",
         icon: "h-10 w-10",
       },
     },
