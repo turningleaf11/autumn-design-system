@@ -33,3 +33,25 @@ export const WithLabel: Story = {
     </div>
   ),
 };
+
+export const WithPrefixSuffix: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: "Composition pattern for value-with-unit fields (currency, dimensions) — prefix/suffix sit inside the field with a divider, not as separate elements.",
+      },
+    },
+  },
+  render: () => (
+    <div style={{ display: "flex", gap: 12 }}>
+      <div className="flex h-10 items-center rounded-xl border-2 border-input bg-background pl-4 pr-3 focus-within:border-primary transition-colors" style={{ width: 160 }}>
+        <span className="text-sm text-muted-foreground mr-1">$</span>
+        <input className="flex-1 bg-transparent outline-none text-sm" defaultValue="1,020.00" />
+      </div>
+      <div className="flex h-10 items-center rounded-xl border-2 border-input bg-background pl-4 pr-3 focus-within:border-primary transition-colors" style={{ width: 140 }}>
+        <input className="flex-1 bg-transparent outline-none text-sm w-0" defaultValue="250" />
+        <span className="text-sm text-muted-foreground border-l border-border pl-2 ml-1">px</span>
+      </div>
+    </div>
+  ),
+};
