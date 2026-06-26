@@ -21,10 +21,11 @@ const SelectTrigger = React.forwardRef<
     {...props}
   >
     {children}
+    {/* Plain chevron, not a circular chip — matches DropdownMenu's chevron
+        treatment instead of being a one-off "icon in a chip" pattern that
+        existed nowhere else in the system. */}
     <SelectPrimitive.Icon asChild>
-      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-muted text-muted-foreground transition-colors group-data-[state=open]:bg-primary/15 group-data-[state=open]:text-primary">
-        <ChevronDown className="h-3.5 w-3.5" />
-      </span>
+      <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-colors group-data-[state=open]:text-primary" />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
 ));
@@ -66,7 +67,8 @@ const SelectContent = React.forwardRef<
     <SelectPrimitive.Content
       ref={ref}
       className={cn(
-        "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-xl border border-border/50 bg-popover text-popover-foreground shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+        // Glass surface — same recipe as DropdownMenu, per foundations/elevation.md.
+        "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-xl bg-card/55 backdrop-blur-[20px] backdrop-saturate-150 border border-border/35 text-popover-foreground shadow-[0_8px_32px_hsl(var(--foreground)/0.12)] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
         position === "popper" &&
           "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
         className,
