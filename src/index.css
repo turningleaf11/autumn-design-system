@@ -280,4 +280,15 @@
       radial-gradient(circle at 50% 105%, hsl(var(--primary) / 0.06), transparent 55%),
       hsl(var(--background));
   }
+
+  /* Scoped scrollbar hide — used by horizontally-scrolling Tabs lists, etc.
+     Ported from evergreenops's index.css (scoped utility only, not the
+     app's global scrollbar-hiding rule). */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }
