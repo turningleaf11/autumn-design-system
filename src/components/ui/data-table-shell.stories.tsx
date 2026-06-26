@@ -25,7 +25,7 @@ const meta: Meta = {
 export default meta;
 type Story = StoryObj;
 
-const TEMPLATE = "2.2fr 1fr 1fr 1fr 100px";
+const TEMPLATE = "2fr 1.4fr 1fr 1fr 100px";
 
 const ROWS = [
   { company: "Sunbelt Holdings LLC", stage: "Under Contract", channel: "Realtor", value: "$184,000", color: "152 60% 38%" },

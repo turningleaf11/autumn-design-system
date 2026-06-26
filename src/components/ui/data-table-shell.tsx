@@ -7,6 +7,10 @@ import { cn } from "@/lib/utils";
  *  - sticky-feeling header row: tiny uppercase tracked muted purple labels on bg-muted/20
  *  - grid-based rows with border-b border-border/30, theme-aware hover (bg-accent, not a hardcoded hex)
  *  - pill-style badges via DataTablePill
+ *  - guaranteed gap-x-4 between columns — evergreenops's real tables rely
+ *    purely on fr-ratios with zero gap, which only avoids looking cramped
+ *    because the real column templates are tuned wide. Baking in a gap makes
+ *    the primitive robust to less-tuned templates.
  *
  * These are presentational only — wire your own onClick/data.
  */
@@ -34,7 +38,7 @@ export function DataTableHeader({ template, children, className }: ColumnsProps)
   return (
     <div
       className={cn(
-        "grid px-5 py-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-[hsl(var(--brand-purple-muted))] border-b border-border/40 bg-muted/20",
+        "grid gap-x-4 px-5 py-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-[hsl(var(--brand-purple-muted))] border-b border-border/40 bg-muted/20",
         className,
       )}
       style={{ gridTemplateColumns: template }}
@@ -58,7 +62,7 @@ export const DataTableRow = forwardRef<HTMLDivElement, RowProps>(function DataTa
   // Theme-aware hover (bg-accent resolves per-theme via CSS vars) instead of a
   // hardcoded #F9F9F9 — the hardcoded hex only had a `dark:` override, which
   // doesn't fire under the class-based Midnight Slate / Warm Sand themes.
-  const base = "group grid items-center px-5 py-3 text-sm border-b border-border/30 last:border-b-0 hover:bg-accent/40 transition-colors";
+  const base = "group grid gap-x-4 items-center px-5 py-3 text-sm border-b border-border/30 last:border-b-0 hover:bg-accent/40 transition-colors";
   const gridStyle: CSSProperties = { gridTemplateColumns: template, ...style };
   if (asButton) {
     return (
