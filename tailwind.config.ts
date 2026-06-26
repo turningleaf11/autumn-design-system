@@ -71,6 +71,17 @@ export default {
           ring: "hsl(var(--sidebar-ring))",
         },
       },
+      boxShadow: {
+        // Tinted lift for Card — picks up the ambient violet/primary hue instead
+        // of flat black, so it reads as "lifted" across all 4 themes without
+        // going neumorphic (which breaks on dark surfaces).
+        // Named "card-lift" (not "card") to avoid colliding with Tailwind's
+        // auto-generated shadow-color utility for the `card` color token —
+        // same name produces two conflicting `.shadow-card` rules.
+        "card-lift": "0 1px 2px hsl(var(--foreground) / 0.04), 0 12px 28px -8px hsl(var(--brand-violet) / 0.22), 0 4px 10px -4px hsl(var(--primary) / 0.12)",
+        "card-lift-hover":
+          "0 1px 2px hsl(var(--foreground) / 0.05), 0 18px 36px -8px hsl(var(--brand-violet) / 0.3), 0 6px 14px -4px hsl(var(--primary) / 0.18)",
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",

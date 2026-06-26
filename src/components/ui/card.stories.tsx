@@ -27,3 +27,30 @@ export const Basic: Story = {
     </Card>
   ),
 };
+
+export const Interactive: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "For click-target cards (list items, project cards). Hover lifts and deepens the tinted shadow — static containers should leave `interactive` off.",
+      },
+    },
+  },
+  render: () => (
+    <Card interactive style={{ width: 360 }}>
+      <CardHeader>
+        <CardTitle>Smart List Redesign</CardTitle>
+        <CardDescription>Rebuild list logic to cut stale leads &gt;15 days.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <p style={{ fontSize: 14, color: "hsl(var(--muted-foreground))" }}>
+          Hover me — this card is a click target.
+        </p>
+      </CardContent>
+      <CardFooter>
+        <Button size="sm">Open project</Button>
+      </CardFooter>
+    </Card>
+  ),
+};

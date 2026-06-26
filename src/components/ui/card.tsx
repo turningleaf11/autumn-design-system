@@ -2,8 +2,22 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
-  <div ref={ref} data-slot="card" className={cn("rounded-2xl border border-border/50 bg-card text-card-foreground", className)} {...props} />
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** Click-target cards (e.g. list items) get a hover lift. Static containers (forms, static panels) should leave this off. */
+  interactive?: boolean;
+}
+
+const Card = React.forwardRef<HTMLDivElement, CardProps>(({ className, interactive = false, ...props }, ref) => (
+  <div
+    ref={ref}
+    data-slot="card"
+    className={cn(
+      "rounded-2xl border border-border/40 bg-card text-card-foreground shadow-card-lift transition-[transform,box-shadow] duration-150",
+      interactive && "cursor-pointer hover:-translate-y-0.5 hover:shadow-card-lift-hover",
+      className,
+    )}
+    {...props}
+  />
 ));
 Card.displayName = "Card";
 
