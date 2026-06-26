@@ -12,6 +12,10 @@ const badgeVariants = cva(
         secondary: "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
         destructive: "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
         outline: "text-foreground",
+        // Premium indicator — avatar menus, plan/tier chips. Same gradient
+        // language as the Button "ai" variant so it reads as "upgraded",
+        // not a random extra color.
+        pro: "border-transparent bg-gradient-to-b from-primary to-ai text-ai-foreground px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide",
       },
     },
     defaultVariants: {
