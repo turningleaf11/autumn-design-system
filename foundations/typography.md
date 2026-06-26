@@ -1,6 +1,6 @@
 # Typography
 
-Clean, neutral, functional. Type should never compete with content — it should organize it.
+Geist-inspired: clean, neutral, functional. Type should never compete with content — it should organize it.
 
 ---
 
@@ -8,13 +8,15 @@ Clean, neutral, functional. Type should never compete with content — it should
 
 | Role | Font | Source |
 |---|---|---|
-| UI (primary) | **Inter** | Google Fonts |
-| Monospace | **JetBrains Mono** | Google Fonts |
+| UI (primary) | **Geist** | Google Fonts |
+| Monospace | **Geist Mono** | Google Fonts |
 | Fallback | `system-ui, -apple-system, sans-serif` | System |
 
-> Inter is the primary face — this is what's actually loaded in evergreenops (`@import` in `index.css`), not an idealized substitute. It reads well at all sizes, has excellent numeral rendering (critical for dashboards), and carries a neutral, functional feel. JetBrains Mono is used for monospace/code contexts.
+> Geist is the primary face. It reads well at all sizes, has excellent numeral rendering (critical for dashboards), and carries a premium/minimal feel without being cold.
 >
-> One decorative exception exists in the app: `DailyMotivation` uses Cormorant Garamond for a single quote-style component. That's a deliberate one-off, not part of the core UI scale, and isn't part of this system.
+> **Status:** this is the design system's target typeface, locked in 2026-06-25. evergreenops still loads Inter + JetBrains Mono today — the app migrates to Geist once the rest of the design system is finished. Until that migration happens, typography is the one deliberate area where this repo leads the app instead of mirroring it.
+>
+> One decorative exception in the app is out of scope either way: `DailyMotivation` uses Cormorant Garamond for a single quote-style component. That's a one-off, not part of the core UI scale.
 
 ---
 
