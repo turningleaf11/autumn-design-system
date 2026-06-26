@@ -6,7 +6,7 @@ const meta: Meta = {
     docs: {
       description: {
         component:
-          "Body text is rendered at 15px app-wide (a deliberate density choice, set on <html>). Font is currently Inter — note: written foundations docs say 'Geist-inspired' but the shipped app loads Inter via Google Fonts. Worth a decision: pick one and update the other.",
+          "Body text is rendered at 15px app-wide (a deliberate density choice, set on <html>). Typeface is Inter (UI) + JetBrains Mono (monospace) — matches what evergreenops actually loads via Google Fonts. The 'Geist-inspired' language in the old foundations doc was aspirational and didn't match the shipped app; it's been corrected to Inter.",
       },
     },
   },
