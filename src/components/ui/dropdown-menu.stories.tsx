@@ -38,15 +38,13 @@ export const AvatarMenu: Story = {
             </Avatar>
           </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" style={{ width: 240 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 10px 10px" }}>
-            <div style={{ display: "flex", flexDirection: "column" }}>
+        <DropdownMenuContent align="end" style={{ width: 260 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 2, padding: "8px 10px 10px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <span style={{ fontSize: 14, fontWeight: 600 }}>Autumn Alexander</span>
-              <span style={{ fontSize: 12, color: "hsl(var(--muted-foreground))" }}>autumn@evergreen.com</span>
+              <Badge variant="pro">Pro</Badge>
             </div>
-            <Badge variant="pro" className="ml-auto">
-              Pro
-            </Badge>
+            <span style={{ fontSize: 12, color: "hsl(var(--muted-foreground))" }}>autumn@evergreen.com</span>
           </div>
           <DropdownMenuSeparator />
           <DropdownMenuItem>
