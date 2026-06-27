@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { StatusBadge, GOAL_STATUS_VARIANT, GOAL_STATUS_LABEL, PROJECT_STATUS_VARIANT, PROJECT_STATUS_LABEL, TASK_STATUS_VARIANT, PRIORITY_VARIANT, PRIORITY_LABEL } from "./StatusBadge";
-import { Flag } from "lucide-react";
+import { StatusBadge, PROCESS_NODE_VARIANT, IMPROVEMENT_KIND_VARIANT } from "./StatusBadge";
 
 const meta: Meta<typeof StatusBadge> = {
   title: "Components/StatusBadge",
@@ -10,7 +9,7 @@ const meta: Meta<typeof StatusBadge> = {
     docs: {
       description: {
         component:
-          "The single source of truth for status and priority chips across OpsHQ. Uses CSS variables so it stays correct in every theme — never hardcode raw Tailwind color classes (bg-red-100, etc.) for status.",
+          "Generic categorical-chip primitive — for labels that aren't a registered entity status (use StatusPill for those: goal/project/task/issue/deal/lead/transaction/contact/thread). StatusBadge is what's left for one-off categories like process-node types or improvement kinds, where there's no statusTone.ts registry entry and no edit-dropdown need. Tone colors (success/warning/danger/info/purple) route through the same TONE_HSL registry StatusPill and Toast use.",
       },
     },
   },
@@ -26,7 +25,7 @@ export default meta;
 type Story = StoryObj<typeof StatusBadge>;
 
 export const Playground: Story = {
-  args: { label: "On Track", variant: "success", size: "sm", dot: true },
+  args: { label: "Idea", variant: "purple", size: "sm", dot: true },
 };
 
 export const AllVariants: Story = {
@@ -39,34 +38,25 @@ export const AllVariants: Story = {
   ),
 };
 
-export const GoalStatuses: Story = {
+export const ProcessNodeTypes: Story = {
+  parameters: {
+    docs: { description: { story: "OpsHQ's process-mapping feature — node types have no entity-status equivalent in statusTone.ts." } },
+  },
   render: () => (
     <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-      {Object.entries(GOAL_STATUS_LABEL).map(([key, label]) => (
-        <StatusBadge key={key} label={label} variant={GOAL_STATUS_VARIANT[key]} dot />
+      {Object.entries(PROCESS_NODE_VARIANT).map(([key, variant]) => (
+        <StatusBadge key={key} label={key} variant={variant} dot />
       ))}
     </div>
   ),
 };
 
-export const ProjectStatuses: Story = {
+export const ImprovementKinds: Story = {
   render: () => (
     <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-      {Object.entries(PROJECT_STATUS_LABEL).map(([key, label]) => (
-        <StatusBadge key={key} label={label} variant={PROJECT_STATUS_VARIANT[key]} dot />
+      {Object.entries(IMPROVEMENT_KIND_VARIANT).map(([key, variant]) => (
+        <StatusBadge key={key} label={key.replace(/_/g, " ")} variant={variant} dot />
       ))}
-    </div>
-  ),
-};
-
-export const PriorityWithIcon: Story = {
-  render: () => (
-    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-      {Object.entries(PRIORITY_LABEL)
-        .filter(([k]) => !["1", "2", "3"].includes(k))
-        .map(([key, label]) => (
-          <StatusBadge key={key} label={label} variant={PRIORITY_VARIANT[key]} icon={<Flag className="h-3 w-3" />} size="xs" />
-        ))}
     </div>
   ),
 };
@@ -76,16 +66,6 @@ export const Sizes: Story = {
     <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
       <StatusBadge label="Extra Small" variant="info" size="xs" dot />
       <StatusBadge label="Small (default)" variant="info" size="sm" dot />
-    </div>
-  ),
-};
-
-export const TaskStatuses: Story = {
-  render: () => (
-    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-      {["not_started", "in_progress", "blocked", "done"].map((key) => (
-        <StatusBadge key={key} label={key.replace(/_/g, " ")} variant={TASK_STATUS_VARIANT[key]} dot />
-      ))}
     </div>
   ),
 };

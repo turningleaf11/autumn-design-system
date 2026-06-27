@@ -1,8 +1,12 @@
 # StatusBadge Component
 
-The canonical way to render any status, priority, type, or category label across all products.
+**Reconciled with StatusPill** — these two used to overlap. StatusBadge shipped its own `TASK_STATUS_VARIANT`/`GOAL_STATUS_VARIANT`/`PROJECT_STATUS_VARIANT`/`PRIORITY_VARIANT` maps, duplicating what `statusTone.ts`'s registry now does — with no edit capability and a different, hardcoded Tailwind color palette (`bg-emerald-500`, `text-amber-700`, etc.) instead of the shared `TONE_HSL` tokens.
 
-**Never use raw Tailwind badge classes.** This component is the single source of truth for badge styling and ensures dark mode works correctly everywhere.
+**Use `StatusPill` (and `PriorityPill`) instead** for any of the registered entity kinds: `goal` / `project` / `task` / `issue` / `deal` / `lead` / `transaction` / `contact` / `thread`. They're registry-driven (`@/lib/statusTone`), support an inline edit dropdown, and are what every page in this system actually uses.
+
+**StatusBadge stays** for everything that *isn't* a registered entity status — one-off categorical labels like process-node types or improvement kinds (OpsHQ's process-mapping feature), where there's no "kind" in `statusTone.ts` and no edit-dropdown need. Tone variants (`success`/`warning`/`danger`/`info`/`purple`) now route through `TONE_HSL`, the same registry StatusPill and Toast use — "success" means the same green everywhere.
+
+**Never use raw Tailwind badge classes.** Ensures dark mode and theme-switching work correctly everywhere.
 
 ---
 
@@ -40,15 +44,12 @@ The canonical way to render any status, priority, type, or category label across
 
 ## Pre-built lookup maps
 
-These maps live in `StatusBadge.tsx` and should be imported wherever you need them:
+Only the non-entity maps remain here — entity status/priority lookups live in `@/lib/statusTone` (`listStatusOptions`, `listPriorityOptions`, `resolveStatusTone`) and are consumed via `StatusPill`/`PriorityPill`, not `StatusBadge`.
 
 ```tsx
 import {
   StatusBadge,
-  TASK_STATUS_VARIANT,   // todo/in_progress/on_track/behind/at_risk/blocked/done
-  PRIORITY_VARIANT,      // high/1/medium/2/low/3
-  PRIORITY_LABEL,        // high → "High" etc.
-  PROCESS_NODE_VARIANT,  // source/process/decision/outcome
+  PROCESS_NODE_VARIANT,     // source/process/decision/outcome
   IMPROVEMENT_KIND_VARIANT, // idea/pain_point/observation/improvement
 } from "@/components/shared/StatusBadge";
 ```
@@ -58,17 +59,13 @@ import {
 ## Usage examples
 
 ```tsx
-// Task status
-<StatusBadge label="In Progress" variant={TASK_STATUS_VARIANT[task.status]} />
+// Entity status — use StatusPill, not StatusBadge
+<StatusPill kind="task" value={task.status} onChange={setStatus} />
 
-// Priority with dot
-<StatusBadge
-  label={PRIORITY_LABEL[task.priority]}
-  variant={PRIORITY_VARIANT[task.priority]}
-  dot
-/>
+// Process node type — no statusTone.ts equivalent, StatusBadge is correct here
+<StatusBadge label="Decision" variant={PROCESS_NODE_VARIANT.decision} dot />
 
-// Custom
+// Custom one-off category
 <StatusBadge label="Wholesale" variant="mint" size="xs" />
 ```
 
