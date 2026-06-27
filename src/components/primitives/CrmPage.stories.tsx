@@ -15,6 +15,7 @@ import { EntityCard } from "./EntityCard";
 import { StatusPill } from "./StatusPill";
 import { DetailSheet } from "./DetailSheet";
 import { Badge } from "../ui/badge";
+import { RichTextEditor } from "../ui/rich-text-editor";
 
 const meta: Meta = {
   title: "Patterns/CRM Page",
@@ -287,7 +288,7 @@ function CrmPageDemo() {
             {
               value: "notes",
               label: "Notes",
-              content: <p className="text-sm text-muted-foreground">Rich text editor mounts here.</p>,
+              content: <RichTextEditor borderless showToolbar minHeight="280px" placeholder="Add notes…" />,
             },
             {
               value: "docs",
