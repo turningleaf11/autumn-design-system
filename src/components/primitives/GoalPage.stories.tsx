@@ -9,6 +9,7 @@ import { EntityViewTabs, type ViewType } from "./EntityViewTabs";
 import { StatusPill } from "./StatusPill";
 import { DetailSheet } from "./DetailSheet";
 import { Badge } from "../ui/badge";
+import { ProgressBar } from "./ProgressBar";
 
 const meta: Meta = {
   title: "Patterns/Goal Page",
@@ -64,17 +65,6 @@ const INITIAL_GOALS: GoalRecord[] = [
     checkIns: [{ date: "May 30", note: "Shipped. Closing out.", progress: 100 }],
   },
 ];
-
-function ProgressBar({ value, hsl }: { value: number; hsl: string }) {
-  return (
-    <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
-      <div
-        className="h-full rounded-full transition-[width] duration-300 ease-out"
-        style={{ width: `${value}%`, backgroundColor: `hsl(${hsl})` }}
-      />
-    </div>
-  );
-}
 
 function GoalPageDemo() {
   const [view] = useState<ViewType>("list");
