@@ -12,6 +12,7 @@ import { PriorityPill } from "./PriorityPill";
 import { DetailSheet } from "./DetailSheet";
 import { Badge } from "../ui/badge";
 import { RichTextEditor } from "../ui/rich-text-editor";
+import { cn } from "@/lib/utils";
 
 const meta: Meta = {
   title: "Patterns/Task Page",
@@ -40,13 +41,15 @@ interface TaskRecord {
   description: string;
   priority: string;
   days: number;
+  /** Days from today the task is due — drives the Timeline view. Undefined = no due date. */
+  dueOffset?: number;
   subtasks: { id: string; label: string; done: boolean }[];
 }
 
 const INITIAL_TASKS: TaskRecord[] = [
   {
     id: "1", stage: "todo", title: "Draft Q3 investor update", description: "Pull numbers from finance, write narrative.",
-    priority: "high", days: 1,
+    priority: "high", days: 1, dueOffset: 0,
     subtasks: [
       { id: "a", label: "Pull revenue numbers", done: true },
       { id: "b", label: "Write narrative draft", done: false },
@@ -55,12 +58,12 @@ const INITIAL_TASKS: TaskRecord[] = [
   },
   {
     id: "2", stage: "todo", title: "Renew office lease", description: "Lease expires end of month.",
-    priority: "medium", days: 4,
+    priority: "medium", days: 4, dueOffset: 3,
     subtasks: [{ id: "a", label: "Get renewal terms from landlord", done: false }],
   },
   {
     id: "3", stage: "in_progress", title: "Migrate billing to Stripe", description: "Cut over from legacy invoicing.",
-    priority: "urgent", days: 9,
+    priority: "urgent", days: 9, dueOffset: 1,
     subtasks: [
       { id: "a", label: "Map existing plans to Stripe products", done: true },
       { id: "b", label: "Test webhook handling", done: true },
@@ -69,10 +72,18 @@ const INITIAL_TASKS: TaskRecord[] = [
   },
   {
     id: "4", stage: "done", title: "Onboard new SDR", description: "Account setup, CRM training.",
-    priority: "low", days: 0,
+    priority: "low", days: 0, dueOffset: -1,
     subtasks: [{ id: "a", label: "Provision accounts", done: true }],
   },
 ];
+
+const TIMELINE_DAYS = 7;
+
+function timelineDate(offset: number): Date {
+  const d = new Date();
+  d.setDate(d.getDate() + offset);
+  return d;
+}
 
 function TaskPageDemo() {
   const [view, setView] = useState<ViewType>("board");
@@ -122,7 +133,7 @@ function TaskPageDemo() {
       </div>
 
       <div className="px-6 pt-3">
-        <EntityViewTabs views={["board", "list"]} active={view} onChange={setView} onFilter={() => {}} onSort={() => {}} />
+        <EntityViewTabs views={["board", "list", "timeline"]} active={view} onChange={setView} onFilter={() => {}} onSort={() => {}} />
       </div>
 
       <div className="flex-1 overflow-auto p-4">
@@ -161,7 +172,7 @@ function TaskPageDemo() {
               );
             })}
           </div>
-        ) : (
+        ) : view === "list" ? (
           <DataTableShell>
             {tasks.map((t) => (
               <EntityCard
@@ -179,8 +190,58 @@ function TaskPageDemo() {
               />
             ))}
           </DataTableShell>
+        ) : (
+          <div className="flex gap-px bg-border/40 rounded-xl overflow-hidden border border-border/40">
+            {Array.from({ length: TIMELINE_DAYS }, (_, i) => i).map((offset) => {
+              const date = timelineDate(offset);
+              const isToday = offset === 0;
+              const dayTasks = tasks.filter((t) => t.dueOffset === offset);
+              return (
+                <div key={offset} className="flex-1 min-w-[120px] bg-background flex flex-col">
+                  <div className={cn("px-2 py-2 text-center border-b border-border/40", isToday && "bg-primary/[0.06]")}>
+                    <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                      {date.toLocaleDateString(undefined, { weekday: "short" })}
+                    </div>
+                    <div className={cn("text-sm font-semibold", isToday ? "text-primary" : "text-foreground")}>
+                      {date.getDate()}
+                    </div>
+                  </div>
+                  <div className="flex-1 p-1.5 space-y-1.5 min-h-[120px]">
+                    {dayTasks.map((t) => (
+                      <EntityCard
+                        key={t.id}
+                        kind="task"
+                        title={t.title}
+                        priority={t.priority}
+                        onClick={() => setPeekId(t.id)}
+                        className="text-xs"
+                      />
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         )}
       </div>
+
+      {/* Unscheduled — tasks with no dueOffset don't appear on the timeline grid */}
+      {view === "timeline" && tasks.some((t) => t.dueOffset === undefined) && (
+        <div className="px-4 pb-4">
+          <p className="text-xs text-muted-foreground mb-1.5">No due date</p>
+          <div className="flex gap-2 flex-wrap">
+            {tasks.filter((t) => t.dueOffset === undefined).map((t) => (
+              <button
+                key={t.id}
+                onClick={() => setPeekId(t.id)}
+                className="text-xs px-2.5 py-1 rounded-md border border-border/40 bg-muted/30 hover:bg-accent/50 transition-colors"
+              >
+                {t.title}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {peek && (
         <DetailSheet
