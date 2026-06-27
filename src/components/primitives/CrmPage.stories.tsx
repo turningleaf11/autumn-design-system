@@ -97,6 +97,11 @@ function CrmPageDemo() {
   const [tab, setTab] = useState<Tab>("deals");
   const [search, setSearch] = useState("");
   const [peek, setPeek] = useState<PeekRecord | null>(null);
+  const [contacts, setContacts] = useState(CONTACTS);
+
+  function updateContactStatus(name: string, status: string) {
+    setContacts((prev) => prev.map((c) => (c.name === name ? { ...c, status } : c)));
+  }
   const meta = TAB_META[tab];
 
   return (
@@ -144,16 +149,21 @@ function CrmPageDemo() {
             <DataTableHeader template={CONTACTS_TEMPLATE}>
               <span>Name</span><span>Email</span><span>Status</span><span></span>
             </DataTableHeader>
-            {CONTACTS.map((c) => (
+            {contacts.map((c) => (
               <DataTableRow
                 key={c.name}
                 template={CONTACTS_TEMPLATE}
-                asButton
                 onClick={() => setPeek({ kind: "contact", name: c.name, description: c.email, status: c.status })}
               >
                 <span style={{ fontWeight: 600 }}>{c.name}</span>
                 <span style={{ color: "hsl(var(--muted-foreground))" }}>{c.email}</span>
-                <StatusPill kind="contact" value={c.status} size="sm" />
+                {/* Row opens the peek via the div-row's own onClick (not asButton)
+                    so this can hold a real <button> dropdown trigger without
+                    nesting button-in-button. stopPropagation keeps the dropdown
+                    click from also firing the row's peek-open. */}
+                <span onClick={(e) => e.stopPropagation()}>
+                  <StatusPill kind="contact" value={c.status} size="sm" onChange={(v) => updateContactStatus(c.name, v)} />
+                </span>
                 <span></span>
               </DataTableRow>
             ))}
