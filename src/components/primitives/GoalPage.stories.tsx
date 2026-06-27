@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Target, Plus, Search } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import { DataTableShell } from "../ui/data-table-shell";
 import { EntityCard } from "./EntityCard";
 import { EntityViewTabs, type ViewType } from "./EntityViewTabs";
 import { StatusPill } from "./StatusPill";
@@ -117,10 +118,11 @@ function GoalPageDemo() {
         <EntityViewTabs views={["list"]} active={view} onChange={() => {}} onSort={() => {}} />
       </div>
 
-      <div className="flex-1 overflow-auto p-4 space-y-2">
-        {goals.map((g) => (
-          <div key={g.id} className="space-y-1.5">
+      <div className="flex-1 overflow-auto p-4">
+        <DataTableShell>
+          {goals.map((g) => (
             <EntityCard
+              key={g.id}
               layout="row"
               kind="goal"
               status={g.status}
@@ -128,8 +130,8 @@ function GoalPageDemo() {
               description={g.description}
               onClick={() => setPeekId(g.id)}
             />
-          </div>
-        ))}
+          ))}
+        </DataTableShell>
       </div>
 
       {peek && (

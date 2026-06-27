@@ -160,7 +160,7 @@ function CrmPageDemo() {
         </TabsContent>
 
         <TabsContent value="leads" className="flex-1 overflow-auto m-0 p-4">
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <DataTableShell>
             {LEADS.map((l) => (
               <EntityCard
                 key={l.title}
@@ -172,7 +172,7 @@ function CrmPageDemo() {
                 onClick={() => setPeek({ kind: "lead", name: l.title, description: l.description, status: l.status })}
               />
             ))}
-          </div>
+          </DataTableShell>
         </TabsContent>
 
         <TabsContent value="companies" className="flex-1 overflow-auto m-0 p-4">

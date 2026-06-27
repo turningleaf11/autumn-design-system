@@ -166,7 +166,7 @@ function ProjectPageDemo() {
             })}
           </div>
         ) : (
-          <div className="flex flex-col gap-2">
+          <DataTableShell>
             {projects.map((p) => (
               <EntityCard
                 key={p.id}
@@ -181,7 +181,7 @@ function ProjectPageDemo() {
                 onClick={() => setPeekId(p.id)}
               />
             ))}
-          </div>
+          </DataTableShell>
         )}
       </div>
 

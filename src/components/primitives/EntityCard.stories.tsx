@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { EntityCard } from "./EntityCard";
 import { StatusPill } from "./StatusPill";
+import { DataTableShell } from "../ui/data-table-shell";
 import { MessageSquare, Paperclip, CheckSquare } from "lucide-react";
 
 const meta: Meta = {
@@ -48,21 +49,39 @@ export const CardLayout: Story = {
 
 export const RowLayout: Story = {
   parameters: {
-    docs: { description: { story: "layout=\"row\" — used in list views, full-width horizontal strip." } },
+    docs: {
+      description: {
+        story:
+          "layout=\"row\" — a single-line list row, not a small card. No border/shadow/corners of its own; meant to be stacked inside a shared list shell (DataTableShell) so the group reads as one continuous table, ClickUp/Linear-style, instead of separated floating cards.",
+      },
+    },
   },
   render: () => (
-    <div style={{ width: 480 }}>
-      <EntityCard
-        layout="row"
-        kind="task"
-        status="in_progress"
-        priority="medium"
-        title="Rebuild Smart List stale-lead logic"
-        description="Cut leads >15 days inactive from the active view."
-        assignees={PEOPLE}
-        dateLabel="Due Fri"
-        onClick={() => {}}
-      />
+    <div style={{ width: 560 }}>
+      <DataTableShell>
+        <EntityCard
+          layout="row"
+          kind="task"
+          status="in_progress"
+          priority="medium"
+          title="Rebuild Smart List stale-lead logic"
+          description="Cut leads >15 days inactive from the active view."
+          assignees={PEOPLE}
+          dateLabel="Due Fri"
+          onClick={() => {}}
+        />
+        <EntityCard
+          layout="row"
+          kind="task"
+          status="todo"
+          priority="low"
+          title="Write onboarding email sequence"
+          description="Three emails, day 0 / day 3 / day 7."
+          assignees={PEOPLE}
+          dateLabel="Due Mon"
+          onClick={() => {}}
+        />
+      </DataTableShell>
     </div>
   ),
 };

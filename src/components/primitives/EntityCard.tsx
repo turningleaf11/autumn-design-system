@@ -79,68 +79,58 @@ export function EntityCard({
   const hasMetadata = metadata && metadata.length > 0;
   const isRow = layout === "row";
 
-  // ── Row layout — horizontal strip used in list views ──────────────────────
+  // ── Row layout — single-line list row (ClickUp/Linear-style), not a small
+  // card. No rounded corners/border/shadow of its own — these are meant to be
+  // stacked back-to-back inside a shared list shell (e.g. DataTableShell),
+  // which supplies the one outer border/shadow for the whole list. Divider
+  // is a bottom border per row; everything lives on one line so a list of
+  // these reads as a continuous table, not a stack of separated cards.
   if (isRow) {
     return (
       <div
         onClick={onClick}
         className={cn(
-          "group bg-card rounded-xl border border-border/40 overflow-hidden",
-          "shadow-card-lift hover:shadow-card-lift-hover hover:border-border transition-all",
+          "group flex items-center gap-3 px-4 py-2.5 border-b border-border/30 last:border-b-0",
+          "hover:bg-accent/40 transition-colors",
           onClick && "cursor-pointer",
-          "flex items-stretch",
           className,
         )}
       >
-        {/* Main content — left side */}
-        <div className="flex-1 min-w-0 p-3.5 space-y-1.5">
-          {/* Title row: status pill + title (status inline, not on its own row) */}
-          <div className="flex items-center gap-2 min-w-0">
-            {status && <StatusPill kind={kind} value={status} size="sm" />}
-            <h3 className="text-sm font-semibold leading-snug truncate text-foreground flex-1 min-w-0">{title}</h3>
-            {onMenuClick && (
-              <button
-                onClick={(e) => { e.stopPropagation(); onMenuClick(e); }}
-                className="text-muted-foreground/60 hover:text-foreground transition-colors -m-1 p-1 rounded-md shrink-0"
-                aria-label="More options"
-              >
-                <MoreHorizontal className="h-3.5 w-3.5" />
-              </button>
-            )}
-          </div>
-
-          {description && (
-            <p className="text-xs text-muted-foreground line-clamp-1 leading-snug">{description}</p>
-          )}
-
-          {/* Bottom row: assignees + date + priority + metadata, all inline */}
-          {(assignees?.length || dateLabel || priority || hasMetadata) && (
-            <div className="flex items-center gap-3 flex-wrap pt-0.5">
-              {assignees && assignees.length > 0 && (
-                <AvatarStack people={assignees} size="sm" max={4} />
-              )}
-              {dateLabel && (
-                <span className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                  <DateIcon className="h-3 w-3" />
-                  {dateLabel}
-                </span>
-              )}
-              {priority && <PriorityPill value={priority} size="sm" />}
-              {hasMetadata && <MetadataRow items={metadata!} className="text-[10px]" />}
-            </div>
-          )}
-        </div>
-
-        {/* Cover thumbnail — far right, fixed square aspect tied to row height */}
         {coverUrl && (
-          <div className="aspect-square bg-muted overflow-hidden shrink-0 self-stretch">
-            <img
-              src={coverUrl}
-              alt=""
-              className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-300"
-            />
+          <div className="h-8 w-8 rounded-md bg-muted overflow-hidden shrink-0">
+            <img src={coverUrl} alt="" className="w-full h-full object-cover" />
           </div>
         )}
+
+        {status && <StatusPill kind={kind} value={status} size="sm" className="shrink-0" />}
+
+        <h3 className="text-sm font-semibold leading-snug truncate text-foreground shrink-0 max-w-[40%]">{title}</h3>
+
+        {description && (
+          <p className="text-xs text-muted-foreground truncate leading-snug flex-1 min-w-0">{description}</p>
+        )}
+
+        {/* Right-aligned metadata cluster — same line as title, not a second row */}
+        <div className="flex items-center gap-3 shrink-0 ml-auto pl-3">
+          {assignees && assignees.length > 0 && <AvatarStack people={assignees} size="sm" max={4} />}
+          {dateLabel && (
+            <span className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground whitespace-nowrap">
+              <DateIcon className="h-3 w-3" />
+              {dateLabel}
+            </span>
+          )}
+          {priority && <PriorityPill value={priority} size="sm" />}
+          {hasMetadata && <MetadataRow items={metadata!} className="text-[10px]" />}
+          {onMenuClick && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onMenuClick(e); }}
+              className="text-muted-foreground/60 hover:text-foreground transition-colors -m-1 p-1 rounded-md shrink-0"
+              aria-label="More options"
+            >
+              <MoreHorizontal className="h-3.5 w-3.5" />
+            </button>
+          )}
+        </div>
       </div>
     );
   }

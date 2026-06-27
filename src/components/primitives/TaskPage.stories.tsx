@@ -4,6 +4,7 @@ import { CheckSquare, Plus, Search, Clock } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Checkbox } from "../ui/checkbox";
+import { DataTableShell } from "../ui/data-table-shell";
 import { EntityCard } from "./EntityCard";
 import { EntityViewTabs, type ViewType } from "./EntityViewTabs";
 import { StatusPill } from "./StatusPill";
@@ -160,7 +161,7 @@ function TaskPageDemo() {
             })}
           </div>
         ) : (
-          <div className="flex flex-col gap-2">
+          <DataTableShell>
             {tasks.map((t) => (
               <EntityCard
                 key={t.id}
@@ -176,7 +177,7 @@ function TaskPageDemo() {
                 onClick={() => setPeekId(t.id)}
               />
             ))}
-          </div>
+          </DataTableShell>
         )}
       </div>
 
