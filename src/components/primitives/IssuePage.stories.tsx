@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
-import { Bug, Plus, Search, Clock } from "lucide-react";
+import { Bug, Plus, Search, Clock, RefreshCw } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { DataTableShell, DataTableHeader, DataTableRow } from "../ui/data-table-shell";
@@ -11,6 +11,7 @@ import { PriorityPill } from "./PriorityPill";
 import { DetailSheet } from "./DetailSheet";
 import { Badge } from "../ui/badge";
 import { RichTextEditor } from "../ui/rich-text-editor";
+import { ActivityFeed, type ActivityItem } from "./ActivityFeed";
 
 const meta: Meta = {
   title: "Patterns/Issue Page",
@@ -47,6 +48,7 @@ interface IssueRecord {
   priority: string;
   days: number;
   related: RelatedItem[];
+  activity: ActivityItem[];
 }
 
 const INITIAL_ISSUES: IssueRecord[] = [
@@ -54,21 +56,32 @@ const INITIAL_ISSUES: IssueRecord[] = [
     id: "1", stage: "open", title: "Stripe webhook drops on >50 line items", description: "Timeout on large invoices during the billing migration cutover.",
     priority: "urgent", days: 1,
     related: [{ title: "Migrate billing to Stripe", kind: "task", status: "in_progress" }],
+    activity: [
+      { id: "a1", type: "event", actor: "Autumn Alexander", action: "opened this issue", icon: Bug, time: "1d ago" },
+      { id: "a2", type: "comment", actor: "Devon Carter", text: "Repro'd on staging — looks like the timeout is on Stripe's side, not ours. Filing a support ticket with them too.", time: "20h ago" },
+      { id: "a3", type: "event", actor: "Devon Carter", action: "changed priority to Urgent", icon: RefreshCw, time: "20h ago" },
+    ],
   },
   {
     id: "2", stage: "open", title: "Avatar fallback shows initials, not silhouette", description: "Regression from the DataTable pass — should use the neutral silhouette per AvatarStack.",
     priority: "low", days: 6,
     related: [],
+    activity: [{ id: "a1", type: "event", actor: "Autumn Alexander", action: "opened this issue", icon: Bug, time: "6d ago" }],
   },
   {
     id: "3", stage: "in_review", title: "Kanban column count off by one", description: "Stage header count doesn't update until a manual refresh.",
     priority: "medium", days: 2,
     related: [{ title: "Duplicate report from #47", kind: "issue", status: "closed" }],
+    activity: [
+      { id: "a1", type: "event", actor: "Jordan Reyes", action: "opened this issue", icon: Bug, time: "2d ago" },
+      { id: "a2", type: "event", actor: "Autumn Alexander", action: "changed status to In Review", icon: RefreshCw, time: "1d ago" },
+    ],
   },
   {
     id: "4", stage: "closed", title: "Select chevron rendered inside chip", description: "Fixed — chevron moved to plain trigger treatment.",
     priority: "low", days: 0,
     related: [],
+    activity: [{ id: "a1", type: "event", actor: "Autumn Alexander", action: "closed this issue", icon: Bug, time: "3d ago" }],
   },
 ];
 
@@ -84,6 +97,16 @@ function IssuePageDemo() {
 
   function updateIssue(id: string, patch: Partial<IssueRecord>) {
     setIssues((prev) => prev.map((i) => (i.id === id ? { ...i, ...patch } : i)));
+  }
+
+  function addComment(id: string, text: string) {
+    setIssues((prev) =>
+      prev.map((i) =>
+        i.id !== id
+          ? i
+          : { ...i, activity: [...i.activity, { id: `c${Date.now()}`, type: "comment", actor: "You", text, time: "Just now" }] },
+      ),
+    );
   }
 
   return (
@@ -223,6 +246,15 @@ function IssuePageDemo() {
               value: "notes",
               label: "Notes",
               content: <RichTextEditor borderless showToolbar minHeight="280px" placeholder="Add notes…" />,
+            },
+            {
+              // The Activity tab named in detail-sheets.md but never built —
+              // change log + comments interleaved by time, distinct from
+              // Goal Page's Check-ins (self-reported snapshots, not a full
+              // system-generated history).
+              value: "activity",
+              label: "Activity",
+              content: <ActivityFeed items={peek.activity} onComment={(text) => addComment(peek.id, text)} />,
             },
           ]}
         />
