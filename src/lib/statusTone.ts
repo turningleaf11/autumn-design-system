@@ -7,8 +7,12 @@
 // to the same hue. That's what makes the app feel systematic.
 
 // ── Tone families (the only colors a status pill is allowed to use) ─────────
+// Exported as TONE_HSL so other systemic surfaces (e.g. Toast) can reuse the
+// same semantic hues instead of re-deriving their own success/warning/danger
+// palette — "Won" deal, a success toast, and a success badge should all be
+// the same green.
 
-const TONE = {
+export const TONE_HSL = {
   success:  "152 65% 42%",   // emerald — completion, healthy, won
   info:     "215 80% 55%",   // azure — in-progress, active, info
   warning:  "32  92% 52%",   // amber — at risk, behind, warning
@@ -27,8 +31,8 @@ export type EntityKind =
 interface Tone { hsl: string; label: string; }
 
 // Helper: map a status value to a tone family, with a fallback to neutral.
-function tone(family: keyof typeof TONE, label: string): Tone {
-  return { hsl: TONE[family], label };
+function tone(family: keyof typeof TONE_HSL, label: string): Tone {
+  return { hsl: TONE_HSL[family], label };
 }
 
 // ── Per-entity registries ──────────────────────────────────────────────────
@@ -111,7 +115,7 @@ export function resolveStatusTone(kind: EntityKind, value: string): Tone {
   if (hit) return hit;
   // Graceful fallback for unknown values — pretty-print the raw value.
   return {
-    hsl: TONE.neutral,
+    hsl: TONE_HSL.neutral,
     label: value.replace(/_/g, " "),
   };
 }
