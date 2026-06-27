@@ -13,6 +13,8 @@ import {
 } from "../ui/data-table-shell";
 import { EntityCard } from "./EntityCard";
 import { StatusPill } from "./StatusPill";
+import { DetailSheet } from "./DetailSheet";
+import { Badge } from "../ui/badge";
 
 const meta: Meta = {
   title: "Patterns/CRM Page",
@@ -70,6 +72,21 @@ const TRANSACTIONS = [
   { company: "Ridgeline Capital", stage: "Closed", stageColor: "152 65% 42%", status: "won", value: "$310,000" },
 ];
 
+const KIND_ACCENT = {
+  contact: "215 80% 55%",
+  lead: "265 70% 60%",
+  deal: "32 92% 52%",
+  company: "152 65% 42%",
+  transaction: "32 92% 52%",
+} as const;
+
+interface PeekRecord {
+  kind: keyof typeof KIND_ACCENT;
+  name: string;
+  description?: string;
+  status?: string;
+}
+
 const LEADS = [
   { title: "New inbound — 184 Sunbelt Ave", description: "Submitted via website form, 12 min ago.", status: "new" },
   { title: "Referral — Jordan Reyes", description: "Via Coastal Acquisitions contact.", status: "working" },
@@ -78,6 +95,7 @@ const LEADS = [
 function CrmPageDemo() {
   const [tab, setTab] = useState<Tab>("deals");
   const [search, setSearch] = useState("");
+  const [peek, setPeek] = useState<PeekRecord | null>(null);
   const meta = TAB_META[tab];
 
   return (
@@ -126,7 +144,12 @@ function CrmPageDemo() {
               <span>Name</span><span>Email</span><span>Status</span><span></span>
             </DataTableHeader>
             {CONTACTS.map((c) => (
-              <DataTableRow key={c.name} template={CONTACTS_TEMPLATE} asButton onClick={() => {}}>
+              <DataTableRow
+                key={c.name}
+                template={CONTACTS_TEMPLATE}
+                asButton
+                onClick={() => setPeek({ kind: "contact", name: c.name, description: c.email, status: c.status })}
+              >
                 <span style={{ fontWeight: 600 }}>{c.name}</span>
                 <span style={{ color: "hsl(var(--muted-foreground))" }}>{c.email}</span>
                 <StatusPill kind="contact" value={c.status} size="sm" />
@@ -139,7 +162,15 @@ function CrmPageDemo() {
         <TabsContent value="leads" className="flex-1 overflow-auto m-0 p-4">
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {LEADS.map((l) => (
-              <EntityCard key={l.title} layout="row" kind="lead" status={l.status} title={l.title} description={l.description} onClick={() => {}} />
+              <EntityCard
+                key={l.title}
+                layout="row"
+                kind="lead"
+                status={l.status}
+                title={l.title}
+                description={l.description}
+                onClick={() => setPeek({ kind: "lead", name: l.title, description: l.description, status: l.status })}
+              />
             ))}
           </div>
         </TabsContent>
@@ -150,7 +181,12 @@ function CrmPageDemo() {
               <span>Company</span><span>Industry</span><span>Deals</span><span></span>
             </DataTableHeader>
             {COMPANIES.map((c) => (
-              <DataTableRow key={c.name} template={COMPANIES_TEMPLATE} asButton onClick={() => {}}>
+              <DataTableRow
+                key={c.name}
+                template={COMPANIES_TEMPLATE}
+                asButton
+                onClick={() => setPeek({ kind: "company", name: c.name, description: `${c.industry} · ${c.deals} deals` })}
+              >
                 <span style={{ fontWeight: 600 }}>{c.name}</span>
                 <span style={{ color: "hsl(var(--muted-foreground))" }}>{c.industry}</span>
                 <span>{c.deals}</span>
@@ -175,7 +211,13 @@ function CrmPageDemo() {
                   </div>
                   <div className="p-2 space-y-2 flex-1">
                     {items.map((d) => (
-                      <EntityCard key={d.id} kind="deal" title={d.title} description={d.value} onClick={() => {}} />
+                      <EntityCard
+                        key={d.id}
+                        kind="deal"
+                        title={d.title}
+                        description={d.value}
+                        onClick={() => setPeek({ kind: "deal", name: d.title, description: d.value, status: stage.id })}
+                      />
                     ))}
                   </div>
                 </div>
@@ -193,7 +235,12 @@ function CrmPageDemo() {
                 <span>Company</span><span>Stage</span><span>Status</span><span>Value</span>
               </DataTableHeader>
               {TRANSACTIONS.map((row) => (
-                <DataTableRow key={row.company} template={TX_TEMPLATE} asButton onClick={() => {}}>
+                <DataTableRow
+                  key={row.company}
+                  template={TX_TEMPLATE}
+                  asButton
+                  onClick={() => setPeek({ kind: "transaction", name: row.company, description: row.value, status: row.status })}
+                >
                   <span style={{ fontWeight: 600 }}>{row.company}</span>
                   <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12 }}>
                     <span style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: `hsl(${row.stageColor})`, flexShrink: 0 }} />
@@ -207,6 +254,49 @@ function CrmPageDemo() {
           )}
         </TabsContent>
       </Tabs>
+
+      {peek && (
+        <DetailSheet
+          open={!!peek}
+          onOpenChange={(o) => !o && setPeek(null)}
+          accentColor={KIND_ACCENT[peek.kind]}
+          typeBadge={<Badge variant="outline" className="capitalize">{peek.kind}</Badge>}
+          statusSlot={
+            peek.status ? (
+              <StatusPill
+                kind={peek.kind === "company" ? "deal" : (peek.kind as Exclude<typeof peek.kind, "company">)}
+                value={peek.status}
+                onChange={(v) => setPeek((p) => p && { ...p, status: v })}
+              />
+            ) : undefined
+          }
+          name={peek.name}
+          onNameChange={(v) => setPeek((p) => p && { ...p, name: v })}
+          description={peek.description}
+          onDescriptionChange={(v) => setPeek((p) => p && { ...p, description: v })}
+          tabs={[
+            {
+              value: "overview",
+              label: "Overview",
+              content: (
+                <p className="text-sm text-muted-foreground">
+                  Summary, related items, and activity for <strong className="text-foreground">{peek.name}</strong> would render here.
+                </p>
+              ),
+            },
+            {
+              value: "notes",
+              label: "Notes",
+              content: <p className="text-sm text-muted-foreground">Rich text editor mounts here.</p>,
+            },
+            {
+              value: "docs",
+              label: "Docs",
+              content: <p className="text-sm text-muted-foreground">Linked documents and attachments.</p>,
+            },
+          ]}
+        />
+      )}
     </div>
   );
 }
