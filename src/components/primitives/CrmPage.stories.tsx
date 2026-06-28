@@ -11,6 +11,7 @@ import {
   DataTablePill,
   DataTableEmpty,
 } from "../ui/data-table-shell";
+import { DataTable, type DataTableColumn } from "../ui/data-table";
 import { EntityCard } from "./EntityCard";
 import { StatusPill } from "./StatusPill";
 import { DetailSheet } from "./DetailSheet";
@@ -41,8 +42,13 @@ const TAB_META: Record<Tab, { label: string; icon: typeof Users; newLabel: strin
   companies: { label: "Companies", icon: Building2, newLabel: "New company" },
 };
 
-const CONTACTS_TEMPLATE = "2fr 1.6fr 1.2fr 100px";
-const CONTACTS = [
+interface ContactRow {
+  name: string;
+  email: string;
+  status: string;
+}
+
+const CONTACTS: ContactRow[] = [
   { name: "Marcus Webb", email: "marcus@coastalacq.com", status: "active" },
   { name: "Priya Shah", email: "priya@ridgeline.cap", status: "lead" },
   { name: "Devon Carter", email: "devon@harborview.co", status: "customer" },
@@ -98,9 +104,30 @@ function CrmPageDemo() {
   const [search, setSearch] = useState("");
   const [peek, setPeek] = useState<PeekRecord | null>(null);
   const [contacts, setContacts] = useState(CONTACTS);
+  const [leads, setLeads] = useState(LEADS);
 
   function updateContactStatus(name: string, status: string) {
     setContacts((prev) => prev.map((c) => (c.name === name ? { ...c, status } : c)));
+  }
+
+  const CONTACT_COLUMNS: DataTableColumn<ContactRow>[] = [
+    { key: "name", label: "Name", width: "2fr", hideable: false, render: (c) => <span style={{ fontWeight: 600 }}>{c.name}</span> },
+    { key: "email", label: "Email", width: "1.6fr", render: (c) => <span style={{ color: "hsl(var(--muted-foreground))" }}>{c.email}</span> },
+    {
+      key: "status",
+      label: "Status",
+      width: "1.2fr",
+      render: (c) => (
+        // stopPropagation keeps the dropdown click from also firing the row's peek-open.
+        <span onClick={(e) => e.stopPropagation()}>
+          <StatusPill kind="contact" value={c.status} size="sm" onChange={(v) => updateContactStatus(c.name, v)} />
+        </span>
+      ),
+    },
+  ];
+
+  function updateLeadStatus(title: string, status: string) {
+    setLeads((prev) => prev.map((l) => (l.title === title ? { ...l, status } : l)));
   }
   const meta = TAB_META[tab];
 
@@ -145,39 +172,26 @@ function CrmPageDemo() {
         </div>
 
         <TabsContent value="contacts" className="flex-1 overflow-auto m-0 p-4">
-          <DataTableShell>
-            <DataTableHeader template={CONTACTS_TEMPLATE}>
-              <span>Name</span><span>Email</span><span>Status</span><span></span>
-            </DataTableHeader>
-            {contacts.map((c) => (
-              <DataTableRow
-                key={c.name}
-                template={CONTACTS_TEMPLATE}
-                onClick={() => setPeek({ kind: "contact", name: c.name, description: c.email, status: c.status })}
-              >
-                <span style={{ fontWeight: 600 }}>{c.name}</span>
-                <span style={{ color: "hsl(var(--muted-foreground))" }}>{c.email}</span>
-                {/* Row opens the peek via the div-row's own onClick (not asButton)
-                    so this can hold a real <button> dropdown trigger without
-                    nesting button-in-button. stopPropagation keeps the dropdown
-                    click from also firing the row's peek-open. */}
-                <span onClick={(e) => e.stopPropagation()}>
-                  <StatusPill kind="contact" value={c.status} size="sm" onChange={(v) => updateContactStatus(c.name, v)} />
-                </span>
-                <span></span>
-              </DataTableRow>
-            ))}
-          </DataTableShell>
+          {/* DataTable (not the hand-rolled DataTableShell) — the "Columns"
+              button lets you drag to reorder and toggle visibility, per
+              feedback ("I want to organize the columns the way I want"). */}
+          <DataTable
+            columns={CONTACT_COLUMNS}
+            data={contacts}
+            rowKey={(c) => c.name}
+            onRowClick={(c) => setPeek({ kind: "contact", name: c.name, description: c.email, status: c.status })}
+          />
         </TabsContent>
 
         <TabsContent value="leads" className="flex-1 overflow-auto m-0 p-4">
           <DataTableShell>
-            {LEADS.map((l) => (
+            {leads.map((l) => (
               <EntityCard
                 key={l.title}
                 layout="row"
                 kind="lead"
                 status={l.status}
+                onStatusChange={(v) => updateLeadStatus(l.title, v)}
                 title={l.title}
                 description={l.description}
                 onClick={() => setPeek({ kind: "lead", name: l.title, description: l.description, status: l.status })}

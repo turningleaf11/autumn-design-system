@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Button } from "../components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../components/ui/card";
-import { StatusBadge } from "../components/shared/StatusBadge";
+import { StatusPill } from "../components/primitives/StatusPill";
 import { Sparkles, ArrowRight, Plus } from "lucide-react";
 
 const meta: Meta = {
@@ -39,7 +39,7 @@ export const DashboardComposition: Story = {
             <CardDescription>Reduce stale leads &gt;15 days by 20%</CardDescription>
           </CardHeader>
           <CardContent style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <StatusBadge label="On Track" variant="success" dot />
+            <StatusPill kind="goal" value="on_track" />
             <span className="text-xs text-muted-foreground">Q2 2026</span>
           </CardContent>
         </Card>
@@ -50,7 +50,7 @@ export const DashboardComposition: Story = {
             <CardDescription>Cara · Raushanah · Due Jul 15</CardDescription>
           </CardHeader>
           <CardContent style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <StatusBadge label="In Progress" variant="info" dot />
+            <StatusPill kind="project" value="in_progress" />
             <Button variant="ghost" size="sm">
               Open <ArrowRight />
             </Button>

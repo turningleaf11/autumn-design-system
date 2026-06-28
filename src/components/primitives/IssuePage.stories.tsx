@@ -181,9 +181,11 @@ function IssuePageDemo() {
                 layout="row"
                 kind="issue"
                 status={i.stage}
+                onStatusChange={(v) => updateIssue(i.id, { stage: v })}
                 title={i.title}
                 description={i.description}
                 priority={i.priority}
+                onPriorityChange={(v) => updateIssue(i.id, { priority: v })}
                 dateLabel={i.days === 0 ? "Today" : `${i.days}d in stage`}
                 dateIcon={Clock}
                 onClick={() => setPeekId(i.id)}

@@ -35,6 +35,11 @@ interface Props {
   status?: string | null;
   priority?: string | null;
 
+  /** Pass to make the status chip an editable dropdown (table/list/card views). */
+  onStatusChange?: (value: string) => void;
+  /** Pass to make the priority chip an editable dropdown. */
+  onPriorityChange?: (value: string) => void;
+
   title: string;
   description?: string | null;
 
@@ -67,6 +72,7 @@ interface Props {
 
 export function EntityCard({
   kind, status, priority,
+  onStatusChange, onPriorityChange,
   title, description,
   coverUrl,
   assignees,
@@ -102,7 +108,11 @@ export function EntityCard({
           </div>
         )}
 
-        {status && <StatusPill kind={kind} value={status} size="sm" className="shrink-0" />}
+        {status && (
+          <span className="shrink-0" onClick={onStatusChange ? (e) => e.stopPropagation() : undefined}>
+            <StatusPill kind={kind} value={status} size="sm" onChange={onStatusChange} />
+          </span>
+        )}
 
         <h3 className="text-sm font-semibold leading-snug truncate text-foreground shrink-0 max-w-[40%]">{title}</h3>
 
@@ -119,7 +129,11 @@ export function EntityCard({
               {dateLabel}
             </span>
           )}
-          {priority && <PriorityPill value={priority} size="sm" />}
+          {priority && (
+            <span onClick={onPriorityChange ? (e) => e.stopPropagation() : undefined}>
+              <PriorityPill value={priority} size="sm" onChange={onPriorityChange} />
+            </span>
+          )}
           {hasMetadata && <MetadataRow items={metadata!} className="text-[10px]" />}
           {onMenuClick && (
             <button
@@ -159,7 +173,11 @@ export function EntityCard({
       <div className="p-3.5 space-y-2.5">
         {(status || onMenuClick) && (
           <div className="flex items-start justify-between gap-2">
-            {status ? <StatusPill kind={kind} value={status} /> : <span />}
+            {status ? (
+              <span onClick={onStatusChange ? (e) => e.stopPropagation() : undefined}>
+                <StatusPill kind={kind} value={status} onChange={onStatusChange} />
+              </span>
+            ) : <span />}
             {onMenuClick && (
               <button
                 onClick={(e) => { e.stopPropagation(); onMenuClick(e); }}
@@ -194,7 +212,11 @@ export function EntityCard({
                 {dateLabel}
               </span>
             ) : <span />}
-            {priority && <PriorityPill value={priority} />}
+            {priority && (
+              <span onClick={onPriorityChange ? (e) => e.stopPropagation() : undefined}>
+                <PriorityPill value={priority} onChange={onPriorityChange} />
+              </span>
+            )}
           </div>
         )}
 

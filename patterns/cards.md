@@ -112,7 +112,7 @@ Every card grid needs an empty state when there's no data:
 | What | Why not |
 |---|---|
 | Inline expand on click | Lazy — open a proper detail sheet |
-| Pill labels for state change | Feels cheap — use StatusBadge |
+| Pill labels for state change | Feels cheap — use StatusPill |
 | Hardcoded colors | Breaks dark mode |
 | Cards without hover state | Unclear they're interactive |
 | Mixing padding values across a grid | Looks inconsistent |

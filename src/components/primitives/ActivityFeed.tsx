@@ -78,24 +78,31 @@ export function ActivityFeed({ items, onComment, currentUser = "You", className 
       </div>
 
       {onComment && (
-        <div className="flex gap-3 pt-1">
-          <Avatar className="h-7 w-7 shrink-0">
-            <AvatarFallback className="text-[10px]">{currentUser.charAt(0)}</AvatarFallback>
-          </Avatar>
-          <div className="flex-1 flex items-end gap-2">
-            <textarea
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) submit();
-              }}
-              placeholder="Leave a comment… (⌘+Enter to send)"
-              rows={2}
-              className="flex-1 resize-none rounded-xl border border-border/50 bg-background px-3 py-2 text-sm outline-none focus:border-primary/40 transition-colors"
-            />
-            <Button size="icon" disabled={!draft.trim()} onClick={submit} aria-label="Send comment">
-              <Send className="h-4 w-4" />
-            </Button>
+        // Sticky to the bottom of the tab's scroll container (not just the
+        // end of the list) — per feedback, the composer should stay
+        // anchored while the feed above it scrolls, chat-app style. The
+        // negative margins bleed it out to DetailSheet's tab-content edges
+        // (px-6 py-5) so it reads as a fixed footer, not just the last item.
+        <div className="sticky bottom-0 -mx-6 -mb-5 bg-card/95 backdrop-blur-sm border-t border-border/40 px-6 pt-3 pb-5">
+          <div className="flex gap-3">
+            <Avatar className="h-8 w-8 shrink-0">
+              <AvatarFallback className="text-xs">{currentUser.charAt(0)}</AvatarFallback>
+            </Avatar>
+            <div className="flex-1 flex items-end gap-2">
+              <textarea
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) submit();
+                }}
+                placeholder="Leave a comment… (⌘+Enter to send)"
+                rows={3}
+                className="flex-1 resize-none rounded-xl border border-border/50 bg-background px-3.5 py-2.5 text-sm outline-none focus:border-primary/40 transition-colors min-h-[88px]"
+              />
+              <Button size="icon" disabled={!draft.trim()} onClick={submit} aria-label="Send comment" className="shrink-0">
+                <Send className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       )}

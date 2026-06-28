@@ -1,8 +1,9 @@
 // PriorityPill — separate from StatusPill because priority is semantic
 // (urgent / high / medium / low) and lives on its own scale.
-// Same shape/density language as StatusPill (rounded-md, not a pill — see
-// foundations/spacing.md), minus the dot — status owns the dot, priority
-// stays text-only so the two are distinguishable at a glance. Pass
+// Same shape/density language as StatusPill: rounded (4px, "curvy
+// rectangle") by default, no dot — status used to own the dot but no
+// longer renders one either (feedback: redundant with the color fill).
+// Pass `shape="pill"` for contexts that want rounded-full instead, and
 // `onChange` to make it an editable dropdown.
 
 import { ChevronDown, Check } from "lucide-react";
@@ -18,11 +19,12 @@ import {
 export interface PriorityPillProps {
   value: string | null | undefined;
   size?: "sm" | "md";
+  shape?: "rect" | "pill";
   onChange?: (value: string) => void;
   className?: string;
 }
 
-export function PriorityPill({ value, size = "md", onChange, className }: PriorityPillProps) {
+export function PriorityPill({ value, size = "md", shape = "rect", onChange, className }: PriorityPillProps) {
   if (!value && !onChange) return null;
   const { hsl, label } = value ? resolvePriorityTone(value) : { hsl: "220 12% 55%", label: "Set priority" };
   const sizeClasses = size === "sm" ? "px-2 py-1 text-[10px]" : "px-2.5 py-1.5 text-[11px]";
@@ -30,7 +32,8 @@ export function PriorityPill({ value, size = "md", onChange, className }: Priori
   const pill = (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-md font-medium whitespace-nowrap",
+        "inline-flex items-center gap-1.5 font-medium whitespace-nowrap",
+        shape === "pill" ? "rounded-full" : "rounded",
         sizeClasses,
         onChange && "cursor-pointer hover:brightness-95 transition-[filter]",
         className,

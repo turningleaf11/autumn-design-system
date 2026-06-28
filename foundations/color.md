@@ -80,5 +80,5 @@ All colors are defined as HSL values without the `hsl()` wrapper, allowing Tailw
 
 - **Never hardcode** a hex value or Tailwind color literal in a component (`bg-red-100`, `text-gray-500`, etc.)
 - Use `hsl(var(--token))` in CSS or `text-foreground`, `bg-card`, etc. in Tailwind
-- Status/badge colors always go through the `StatusBadge` component — see [components/status-badge.md](../components/status-badge.md)
+- Entity status/priority colors always go through `StatusPill`/`PriorityPill` (registry-driven via `@/lib/statusTone`) — never hardcode a status color one-off
 - Adding a new semantic color? Define it in all three palette themes simultaneously

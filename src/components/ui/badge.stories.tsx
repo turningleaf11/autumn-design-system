@@ -9,7 +9,7 @@ const meta: Meta<typeof Badge> = {
     docs: {
       description: {
         component:
-          "shadcn's base Badge. For status/priority chips in the app, prefer StatusBadge instead — it's theme-safe and has semantic variant maps. This is kept for generic tag use (e.g. project tags).",
+          "shadcn's base Badge. For entity status/priority chips, use StatusPill/PriorityPill instead — they're registry-driven and support the inline edit dropdown. This one is what every DetailSheet header actually uses for its typeBadge (\"Task\", \"Project\", \"Goal\"...) via the outline variant, plus the pro variant for tier/plan chips.",
       },
     },
   },

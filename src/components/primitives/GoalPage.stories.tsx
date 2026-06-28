@@ -116,6 +116,7 @@ function GoalPageDemo() {
               layout="row"
               kind="goal"
               status={g.status}
+              onStatusChange={(v) => updateGoal(g.id, { status: v })}
               title={g.title}
               description={g.description}
               onClick={() => setPeekId(g.id)}

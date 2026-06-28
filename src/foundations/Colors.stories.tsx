@@ -63,7 +63,7 @@ export const Rules: Story = {
       <ul style={{ paddingLeft: 20 }}>
         <li>Never hardcode a hex value or raw Tailwind color (<code>bg-red-100</code>, <code>text-gray-500</code>) in a component.</li>
         <li>Use <code>hsl(var(--token))</code> in CSS, or <code>bg-card</code> / <code>text-foreground</code> in Tailwind.</li>
-        <li>Status/priority chips always go through <code>StatusBadge</code> — see Components/StatusBadge.</li>
+        <li>Entity status/priority chips always go through <code>StatusPill</code>/<code>PriorityPill</code> — see Components/EntityCard.</li>
         <li>Adding a new semantic color? Define it in all four themes at once (Default light, Default dark, Midnight Slate, Warm Sand).</li>
       </ul>
     </div>

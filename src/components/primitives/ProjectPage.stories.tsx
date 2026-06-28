@@ -173,6 +173,7 @@ function ProjectPageDemo() {
                 layout="row"
                 kind="project"
                 status={p.stage}
+                onStatusChange={(v) => updateProject(p.id, { stage: v })}
                 title={p.title}
                 description={p.description}
                 dateLabel={p.days > 0 ? `${p.days}d in stage` : undefined}

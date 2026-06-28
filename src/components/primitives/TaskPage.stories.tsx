@@ -180,9 +180,11 @@ function TaskPageDemo() {
                 layout="row"
                 kind="task"
                 status={t.stage}
+                onStatusChange={(v) => updateTask(t.id, { stage: v })}
                 title={t.title}
                 description={t.description}
                 priority={t.priority}
+                onPriorityChange={(v) => updateTask(t.id, { priority: v })}
                 dateLabel={t.days === 0 ? "Today" : `${t.days}d in stage`}
                 dateIcon={Clock}
                 metadata={[{ icon: CheckSquare, value: `${t.subtasks.filter((s) => s.done).length}/${t.subtasks.length}` }]}

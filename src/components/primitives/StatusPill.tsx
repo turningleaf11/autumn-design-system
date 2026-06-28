@@ -8,12 +8,14 @@
 // "Won" deal looks identical to a "Done" task looks identical to a
 // "Completed" project — same tone, same shape, same density.
 //
-// Visual: soft pastel background (~15% saturation), colored dot prefix,
-// rounded-md (not a pill — see foundations/spacing.md, chips use the `sm`
-// radius token, 6px). When `onChange` is passed it becomes a dropdown
-// trigger with a chevron, so status can be edited inline anywhere this
-// renders (tables, card headers, sheet headers) instead of only in a
-// dedicated edit form.
+// Visual: soft pastel background (~15% saturation), no dot (dropped per
+// feedback — redundant with the color fill itself, and made the chip read
+// as a pill even at rounded-md). Default radius is `rounded` (4px) — a
+// "curvy rectangle" rather than a pill; pass `shape="pill"` for contexts
+// that want the fuller rounded-full treatment (mixing both shapes
+// deliberately is fine, per feedback — just not by accident everywhere).
+// When `onChange` is passed it becomes a dropdown trigger with a chevron,
+// so status can be edited inline anywhere this renders.
 
 import { ChevronDown, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -32,15 +34,17 @@ export interface StatusPillProps {
   label?: string;
   /** Smaller variant for dense lists. */
   size?: "sm" | "md";
-  /** Hide the colored dot prefix (rare — usually keep it). */
-  hideDot?: boolean;
+  /** Show the colored dot prefix. Off by default — see note above. */
+  showDot?: boolean;
+  /** "rect" (default) — curvy rectangle, rounded (4px). "pill" — rounded-full. */
+  shape?: "rect" | "pill";
   /** Pass to make this an editable dropdown instead of a static pill. */
   onChange?: (value: string) => void;
   className?: string;
 }
 
 export function StatusPill({
-  kind, value, label, size = "md", hideDot = false, onChange, className,
+  kind, value, label, size = "md", showDot = false, shape = "rect", onChange, className,
 }: StatusPillProps) {
   if (!value && !onChange) return null;
   const { hsl, label: registryLabel } = value
@@ -54,7 +58,8 @@ export function StatusPill({
   const pill = (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-md font-medium whitespace-nowrap",
+        "inline-flex items-center gap-1.5 font-medium whitespace-nowrap",
+        shape === "pill" ? "rounded-full" : "rounded",
         sizeClasses,
         onChange && "cursor-pointer hover:brightness-95 transition-[filter]",
         className,
@@ -64,7 +69,7 @@ export function StatusPill({
         color: `hsl(${hsl})`,
       }}
     >
-      {!hideDot && (
+      {showDot && (
         <span
           className="inline-block rounded-full shrink-0"
           style={{ width: dotSize, height: dotSize, backgroundColor: `hsl(${hsl})` }}
