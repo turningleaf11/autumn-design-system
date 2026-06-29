@@ -31,13 +31,15 @@ interface Props {
   onFilter?: () => void;
   onGroupBy?: () => void;
   onSort?: () => void;
+  /** Pass a real <FilterMenu/> (or any node) to replace the plain Filter button — lets pages wire actual filtering instead of a no-op. */
+  filterSlot?: React.ReactNode;
 
   className?: string;
 }
 
 export function EntityViewTabs({
   views, active, onChange,
-  onFilter, onGroupBy, onSort,
+  onFilter, onGroupBy, onSort, filterSlot,
   className,
 }: Props) {
   return (
@@ -65,14 +67,14 @@ export function EntityViewTabs({
       </div>
 
       <div className="flex items-center gap-1 pr-1">
-        {onFilter && (
+        {filterSlot ?? (onFilter && (
           <button
             onClick={onFilter}
             className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
           >
             <FilterIcon className="h-3.5 w-3.5" /> Filter
           </button>
-        )}
+        ))}
         {onGroupBy && (
           <button
             onClick={onGroupBy}

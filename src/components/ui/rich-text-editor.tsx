@@ -36,6 +36,7 @@ import {
   Table as TableIcon, MessageSquarePlus, Send,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { TooltipProvider, SimpleTooltip } from "./tooltip";
 import { SlashCommand, type SlashCommandItem } from "./rich-text-editor-slash-command";
 import { createMentionExtension, type MentionableUser } from "./rich-text-editor-mention";
 import { DragHandle } from "./rich-text-editor-drag-handle";
@@ -68,16 +69,17 @@ function ToolbarButton({
   active, onClick, disabled, children, label,
 }: { active?: boolean; onClick: () => void; disabled?: boolean; children: React.ReactNode; label: string }) {
   return (
-    <button
-      type="button"
-      aria-label={label}
-      title={label}
-      disabled={disabled}
-      onClick={onClick}
-      className={cn(TOOLBAR_BUTTON, active && TOOLBAR_BUTTON_ACTIVE)}
-    >
-      {children}
-    </button>
+    <SimpleTooltip label={label}>
+      <button
+        type="button"
+        aria-label={label}
+        disabled={disabled}
+        onClick={onClick}
+        className={cn(TOOLBAR_BUTTON, active && TOOLBAR_BUTTON_ACTIVE)}
+      >
+        {children}
+      </button>
+    </SimpleTooltip>
   );
 }
 
@@ -195,6 +197,7 @@ export function RichTextEditor({
   }
 
   return (
+    <TooltipProvider delayDuration={400} skipDelayDuration={0}>
     <div
       className={cn(
         !borderless && "rounded-xl border border-border/50 bg-background overflow-hidden",
@@ -282,6 +285,7 @@ export function RichTextEditor({
         )}
       />
     </div>
+    </TooltipProvider>
   );
 }
 

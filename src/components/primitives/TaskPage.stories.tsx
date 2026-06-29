@@ -12,6 +12,7 @@ import { PriorityPill } from "./PriorityPill";
 import { DetailSheet } from "./DetailSheet";
 import { Badge } from "../ui/badge";
 import { RichTextEditor } from "../ui/rich-text-editor";
+import { FilterMenu, matchesFilters, type FilterState } from "./FilterMenu";
 import { cn } from "@/lib/utils";
 
 const meta: Meta = {
@@ -32,6 +33,17 @@ const STAGES = [
   { id: "todo", name: "To Do", color: "220 12% 55%" },
   { id: "in_progress", name: "In Progress", color: "215 80% 55%" },
   { id: "done", name: "Done", color: "152 65% 42%" },
+];
+
+const FILTER_FIELDS = [
+  { key: "stage", label: "Status", options: STAGES.map((s) => ({ value: s.id, label: s.name })) },
+  {
+    key: "priority", label: "Priority",
+    options: [
+      { value: "low", label: "Low" }, { value: "medium", label: "Medium" },
+      { value: "high", label: "High" }, { value: "urgent", label: "Urgent" },
+    ],
+  },
 ];
 
 interface TaskRecord {
@@ -90,7 +102,9 @@ function TaskPageDemo() {
   const [search, setSearch] = useState("");
   const [tasks, setTasks] = useState(INITIAL_TASKS);
   const [peekId, setPeekId] = useState<string | null>(null);
+  const [filters, setFilters] = useState<FilterState>({});
 
+  const visibleTasks = tasks.filter((t) => matchesFilters(t, FILTER_FIELDS, filters));
   const peek = tasks.find((t) => t.id === peekId) ?? null;
 
   function updateTask(id: string, patch: Partial<TaskRecord>) {
@@ -133,14 +147,14 @@ function TaskPageDemo() {
       </div>
 
       <div className="px-6 pt-3">
-        <EntityViewTabs views={["board", "list", "timeline"]} active={view} onChange={setView} onFilter={() => {}} onSort={() => {}} />
+        <EntityViewTabs views={["board", "list", "timeline"]} active={view} onChange={setView} filterSlot={<FilterMenu fields={FILTER_FIELDS} value={filters} onChange={setFilters} />} onSort={() => {}} />
       </div>
 
       <div className="flex-1 overflow-auto p-4">
         {view === "board" ? (
           <div className="flex gap-3 overflow-x-auto pb-2">
             {STAGES.map((stage) => {
-              const items = tasks.filter((t) => t.stage === stage.id);
+              const items = visibleTasks.filter((t) => t.stage === stage.id);
               return (
                 <div key={stage.id} className="flex flex-col rounded-xl bg-muted/30 border border-border/30 min-h-[200px] flex-1 min-w-[240px] max-w-[280px] shrink-0">
                   <div className="px-3 py-2 border-b border-border/30 flex items-center justify-between">
@@ -174,7 +188,7 @@ function TaskPageDemo() {
           </div>
         ) : view === "list" ? (
           <DataTableShell>
-            {tasks.map((t) => (
+            {visibleTasks.map((t) => (
               <EntityCard
                 key={t.id}
                 layout="row"
@@ -197,7 +211,7 @@ function TaskPageDemo() {
             {Array.from({ length: TIMELINE_DAYS }, (_, i) => i).map((offset) => {
               const date = timelineDate(offset);
               const isToday = offset === 0;
-              const dayTasks = tasks.filter((t) => t.dueOffset === offset);
+              const dayTasks = visibleTasks.filter((t) => t.dueOffset === offset);
               return (
                 <div key={offset} className="flex-1 min-w-[120px] bg-background flex flex-col">
                   <div className={cn("px-2 py-2 text-center border-b border-border/40", isToday && "bg-primary/[0.06]")}>
@@ -228,11 +242,11 @@ function TaskPageDemo() {
       </div>
 
       {/* Unscheduled — tasks with no dueOffset don't appear on the timeline grid */}
-      {view === "timeline" && tasks.some((t) => t.dueOffset === undefined) && (
+      {view === "timeline" && visibleTasks.some((t) => t.dueOffset === undefined) && (
         <div className="px-4 pb-4">
           <p className="text-xs text-muted-foreground mb-1.5">No due date</p>
           <div className="flex gap-2 flex-wrap">
-            {tasks.filter((t) => t.dueOffset === undefined).map((t) => (
+            {visibleTasks.filter((t) => t.dueOffset === undefined).map((t) => (
               <button
                 key={t.id}
                 onClick={() => setPeekId(t.id)}
