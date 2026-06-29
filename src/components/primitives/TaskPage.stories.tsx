@@ -13,6 +13,7 @@ import { DetailSheet } from "./DetailSheet";
 import { Badge } from "../ui/badge";
 import { RichTextEditor } from "../ui/rich-text-editor";
 import { FilterMenu, matchesFilters, type FilterState } from "./FilterMenu";
+import { DatePicker } from "../ui/date-picker";
 import { cn } from "@/lib/utils";
 
 const meta: Meta = {
@@ -279,6 +280,22 @@ function TaskPageDemo() {
                   <div className="flex items-center gap-2">
                     <span className="text-muted-foreground w-16 shrink-0">Priority</span>
                     <PriorityPill value={peek.priority} onChange={(v) => updateTask(peek.id, { priority: v })} />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-muted-foreground w-16 shrink-0">Due date</span>
+                    <div className="w-40">
+                      <DatePicker
+                        value={peek.dueOffset !== undefined ? timelineDate(peek.dueOffset) : null}
+                        onChange={(date) => {
+                          const msPerDay = 1000 * 60 * 60 * 24;
+                          const today = new Date();
+                          today.setHours(0, 0, 0, 0);
+                          const target = new Date(date);
+                          target.setHours(0, 0, 0, 0);
+                          updateTask(peek.id, { dueOffset: Math.round((target.getTime() - today.getTime()) / msPerDay) });
+                        }}
+                      />
+                    </div>
                   </div>
                   <p className="text-muted-foreground">{peek.description}</p>
                 </div>
