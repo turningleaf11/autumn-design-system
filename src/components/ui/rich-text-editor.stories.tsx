@@ -8,7 +8,7 @@ const meta: Meta<typeof RichTextEditor> = {
     docs: {
       description: {
         component:
-          "TipTap-based editor implementing components/rich-text-editor.md — toolbar, bubble menu on selection, and slash commands (type \"/\"). Image upload is app-specific (Supabase storage etc.), so it's exposed as an `onUploadImage` callback rather than a built-in pipeline.",
+          "TipTap-based editor implementing components/rich-text-editor.md, plus extensions beyond the original spec: tables, a block drag handle (hover the left gutter), @mentions, and inline comments (select text → Comment in the bubble menu). Image upload and comment-thread persistence are app-specific, so those are exposed as callbacks rather than built-in pipelines.",
       },
     },
   },
@@ -16,17 +16,47 @@ const meta: Meta<typeof RichTextEditor> = {
 export default meta;
 type Story = StoryObj<typeof RichTextEditor>;
 
+const MENTIONABLE_USERS = [
+  { id: "1", name: "Autumn Alexander" },
+  { id: "2", name: "Jordan Reyes" },
+  { id: "3", name: "Priya Shah" },
+  { id: "4", name: "Devon Carter" },
+];
+
 function StandaloneDemo() {
-  const [html, setHtml] = useState("<p>Try typing <strong>/</strong> to open the command menu, or select text to see the bubble menu.</p>");
+  const [html, setHtml] = useState(
+    "<p>Try typing <strong>/</strong> for the command menu, <strong>@</strong> to mention someone, or select text to see the bubble menu (Comment is in there too).</p>",
+  );
   return (
     <div style={{ width: 560 }}>
-      <RichTextEditor content={html} onChange={setHtml} placeholder="Add notes…" onUploadImage={() => alert("wire this to your upload flow")} />
+      <RichTextEditor
+        content={html}
+        onChange={setHtml}
+        placeholder="Add notes…"
+        onUploadImage={() => alert("wire this to your upload flow")}
+        mentionableUsers={MENTIONABLE_USERS}
+        onAddComment={(selectedText, comment) => alert(`Comment on "${selectedText}":\n${comment}`)}
+      />
     </div>
   );
 }
 
 export const Standalone: Story = {
   render: () => <StandaloneDemo />,
+};
+
+export const TablesAndDragHandle: Story = {
+  parameters: {
+    docs: { description: { story: "Insert a table via the toolbar or \"/table\". Hover the left edge of any block to reveal the drag handle, then drag to reorder." } },
+  },
+  render: () => (
+    <div style={{ width: 600 }}>
+      <RichTextEditor
+        content="<h2>Q3 Roadmap</h2><p>Drag this paragraph above the heading using the handle in the left gutter.</p><table><tbody><tr><th>Feature</th><th>Owner</th><th>Status</th></tr><tr><td>Billing migration</td><td>Devon</td><td>In progress</td></tr><tr><td>SOC 2 readiness</td><td>Priya</td><td>At risk</td></tr></tbody></table>"
+        placeholder="Add notes…"
+      />
+    </div>
+  ),
 };
 
 export const NotesTabEmbedded: Story = {

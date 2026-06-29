@@ -1,12 +1,22 @@
 // RichTextEditor — TipTap-based editor for notes, descriptions, and
 // documents across all products. See components/rich-text-editor.md for the
-// full spec this implements: slash commands, bubble menu, toolbar, HTML
-// content format.
+// spec this implements: slash commands, bubble menu, toolbar, HTML content
+// format. Extended beyond the original spec with: tables, a block drag
+// handle (left gutter, hover to reveal), @mentions, and inline comments
+// (select text → Comment in the bubble menu → highlights the range).
 //
-// Scope note: file/image *upload* is app-specific (needs Supabase storage,
-// auth, etc.) so this ships the UI affordance (toolbar button + slash
-// command) wired to an `onUploadImage` callback the host app provides,
-// rather than a built-in upload pipeline.
+// Scope notes:
+// - File/image *upload* is app-specific (needs Supabase storage, auth,
+//   etc.) so this ships the UI affordance (toolbar button + slash command)
+//   wired to an `onUploadImage` callback, not a built-in pipeline.
+// - @mentions need a real teammate list — pass `mentionableUsers`, same
+//   shape as AppShell's owner-picker. Omit the prop to disable mentions.
+// - Inline comments are a UI shell: `onAddComment` fires with the selected
+//   text + comment body, and the range gets a highlight mark. Persisting
+//   threads (who said what, resolved/unresolved) is app-specific — wire it
+//   the same way ActivityFeed's composer is wired to real data.
+// - Markdown shortcuts (# , **bold**, - , etc.) are already live — they
+//   ship for free with StarterKit's input rules, nothing to build.
 
 import * as React from "react";
 import { useEditor, EditorContent, BubbleMenu, type Editor } from "@tiptap/react";
@@ -15,12 +25,21 @@ import Placeholder from "@tiptap/extension-placeholder";
 import Link from "@tiptap/extension-link";
 import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
+import Table from "@tiptap/extension-table";
+import TableRow from "@tiptap/extension-table-row";
+import TableCell from "@tiptap/extension-table-cell";
+import TableHeader from "@tiptap/extension-table-header";
+import Highlight from "@tiptap/extension-highlight";
 import {
   Bold, Italic, Strikethrough, Heading1, Heading2, Heading3,
   List, ListOrdered, ListTodo, Quote, Code, Minus, Link2, Image as ImageIcon,
+  Table as TableIcon, MessageSquarePlus, Send,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SlashCommand, type SlashCommandItem } from "./rich-text-editor-slash-command";
+import { createMentionExtension, type MentionableUser } from "./rich-text-editor-mention";
+import { DragHandle } from "./rich-text-editor-drag-handle";
+import { Button } from "./button";
 
 export interface RichTextEditorProps {
   content?: string;
@@ -34,6 +53,10 @@ export interface RichTextEditorProps {
   showToolbar?: boolean;
   /** Wired to the toolbar/slash-command image action — upload is app-specific. */
   onUploadImage?: () => void;
+  /** Teammates available for @mention autocomplete. Omit to disable mentions. */
+  mentionableUsers?: MentionableUser[];
+  /** Called when a comment is added via the bubble menu's Comment action. */
+  onAddComment?: (selectedText: string, comment: string) => void;
   className?: string;
 }
 
@@ -101,6 +124,12 @@ function Toolbar({ editor, onUploadImage }: { editor: Editor; onUploadImage?: ()
         <Minus className="h-3.5 w-3.5" />
       </ToolbarButton>
       <ToolbarButton
+        label="Table"
+        onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}
+      >
+        <TableIcon className="h-3.5 w-3.5" />
+      </ToolbarButton>
+      <ToolbarButton
         label="Link"
         active={editor.isActive("link")}
         onClick={() => {
@@ -123,12 +152,14 @@ function Toolbar({ editor, onUploadImage }: { editor: Editor; onUploadImage?: ()
 export function RichTextEditor({
   content, onChange, placeholder = "Start typing…",
   borderless = false, compact = false, minHeight = "160px",
-  showToolbar = true, onUploadImage, className,
+  showToolbar = true, onUploadImage, mentionableUsers, onAddComment, className,
 }: RichTextEditorProps) {
   const slashItems = React.useMemo<SlashCommandItem[]>(
     () => buildSlashCommandItems(onUploadImage),
     [onUploadImage],
   );
+  const [commentMode, setCommentMode] = React.useState(false);
+  const [commentDraft, setCommentDraft] = React.useState("");
 
   const editor = useEditor({
     extensions: [
@@ -137,13 +168,31 @@ export function RichTextEditor({
       Link.configure({ openOnClick: false, autolink: true }),
       TaskList,
       TaskItem.configure({ nested: true }),
+      Table.configure({ resizable: true }),
+      TableRow,
+      TableHeader,
+      TableCell,
+      Highlight.configure({ HTMLAttributes: { class: "rte-comment-highlight" } }),
+      DragHandle,
       SlashCommand.configure({ items: slashItems }),
+      ...(mentionableUsers ? [createMentionExtension(mentionableUsers)] : []),
     ],
     content,
     onUpdate: ({ editor: e }) => onChange?.(e.getHTML()),
   });
 
   if (!editor) return null;
+
+  function submitComment() {
+    const text = commentDraft.trim();
+    if (!text || !editor) return;
+    const { from, to } = editor.state.selection;
+    const selectedText = editor.state.doc.textBetween(from, to, " ");
+    editor.chain().setHighlight().run();
+    onAddComment?.(selectedText, text);
+    setCommentDraft("");
+    setCommentMode(false);
+  }
 
   return (
     <div
@@ -155,25 +204,57 @@ export function RichTextEditor({
       {showToolbar && <Toolbar editor={editor} onUploadImage={onUploadImage} />}
 
       {editor && (
-        <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
-          <div className="flex items-center gap-0.5 rounded-lg border border-border/35 bg-card/55 backdrop-blur-[20px] backdrop-saturate-150 shadow-[0_8px_32px_hsl(var(--foreground)/0.12)] p-1">
-            <ToolbarButton label="Bold" active={editor.isActive("bold")} onClick={() => editor.chain().focus().toggleBold().run()}>
-              <Bold className="h-3.5 w-3.5" />
-            </ToolbarButton>
-            <ToolbarButton label="Italic" active={editor.isActive("italic")} onClick={() => editor.chain().focus().toggleItalic().run()}>
-              <Italic className="h-3.5 w-3.5" />
-            </ToolbarButton>
-            <ToolbarButton
-              label="Link"
-              active={editor.isActive("link")}
-              onClick={() => {
-                const url = window.prompt("Link URL");
-                if (url) editor.chain().focus().setLink({ href: url }).run();
-              }}
-            >
-              <Link2 className="h-3.5 w-3.5" />
-            </ToolbarButton>
-          </div>
+        <BubbleMenu
+          editor={editor}
+          // shouldShow's default checks editor.view.hasFocus(), which becomes
+          // false the instant you click into the comment textarea (it's
+          // outside the contentEditable) — the popup would vanish before you
+          // could type anything. Keep it open while commentMode is true
+          // regardless of focus; interactive:true stops tippy from treating
+          // a click inside its own popup as an "outside click" dismissal.
+          shouldShow={({ editor: ed, state }) => commentMode || (ed.isEditable && !state.selection.empty)}
+          tippyOptions={{ duration: 100, interactive: true, onHide: () => setCommentMode(false) }}
+        >
+          {commentMode ? (
+            <div className="flex items-end gap-2 rounded-lg border border-border/35 bg-card/55 backdrop-blur-[20px] backdrop-saturate-150 shadow-[0_8px_32px_hsl(var(--foreground)/0.12)] p-2 w-64">
+              <textarea
+                autoFocus
+                value={commentDraft}
+                onChange={(e) => setCommentDraft(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) submitComment(); }}
+                placeholder="Comment on this…"
+                rows={2}
+                className="flex-1 resize-none rounded-md border border-border/50 bg-background px-2 py-1.5 text-xs outline-none focus:border-primary/40"
+              />
+              <Button size="icon" className="h-7 w-7 shrink-0" disabled={!commentDraft.trim()} onClick={submitComment} aria-label="Send comment">
+                <Send className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-0.5 rounded-lg border border-border/35 bg-card/55 backdrop-blur-[20px] backdrop-saturate-150 shadow-[0_8px_32px_hsl(var(--foreground)/0.12)] p-1">
+              <ToolbarButton label="Bold" active={editor.isActive("bold")} onClick={() => editor.chain().focus().toggleBold().run()}>
+                <Bold className="h-3.5 w-3.5" />
+              </ToolbarButton>
+              <ToolbarButton label="Italic" active={editor.isActive("italic")} onClick={() => editor.chain().focus().toggleItalic().run()}>
+                <Italic className="h-3.5 w-3.5" />
+              </ToolbarButton>
+              <ToolbarButton
+                label="Link"
+                active={editor.isActive("link")}
+                onClick={() => {
+                  const url = window.prompt("Link URL");
+                  if (url) editor.chain().focus().setLink({ href: url }).run();
+                }}
+              >
+                <Link2 className="h-3.5 w-3.5" />
+              </ToolbarButton>
+              {onAddComment && (
+                <ToolbarButton label="Comment" onClick={() => setCommentMode(true)}>
+                  <MessageSquarePlus className="h-3.5 w-3.5" />
+                </ToolbarButton>
+              )}
+            </div>
+          )}
         </BubbleMenu>
       )}
 
@@ -215,6 +296,7 @@ function buildSlashCommandItems(onUploadImage?: () => void): SlashCommandItem[] 
     { title: "Quote", icon: Quote, command: (editor) => editor.chain().focus().toggleBlockquote().run() },
     { title: "Code block", icon: Code, command: (editor) => editor.chain().focus().toggleCodeBlock().run() },
     { title: "Divider", icon: Minus, command: (editor) => editor.chain().focus().setHorizontalRule().run() },
+    { title: "Table", icon: TableIcon, command: (editor) => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run() },
   ];
   if (onUploadImage) {
     items.push({ title: "Image", icon: ImageIcon, command: () => onUploadImage() });
