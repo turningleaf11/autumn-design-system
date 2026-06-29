@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
-import { Users, Building2, Rocket, Plus, Search, Inbox, FileText } from "lucide-react";
+import { Users, Building2, Rocket, Plus, Search, Inbox, FileText, Download, Trash2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "../ui/tabs";
@@ -180,6 +180,14 @@ function CrmPageDemo() {
             data={contacts}
             rowKey={(c) => c.name}
             onRowClick={(c) => setPeek({ kind: "contact", name: c.name, description: c.email, status: c.status })}
+            selectable
+            bulkActions={[
+              { label: "Export", icon: Download, onClick: (rows) => alert(`Export ${rows.length} contact(s)`) },
+              {
+                label: "Delete", icon: Trash2, variant: "destructive",
+                onClick: (rows) => setContacts((prev) => prev.filter((c) => !rows.some((r) => r.name === c.name))),
+              },
+            ]}
           />
         </TabsContent>
 

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { Trash2, Archive } from "lucide-react";
 import { DataTable, type DataTableColumn } from "./data-table";
 
 const meta: Meta = {
@@ -39,6 +40,45 @@ export const Default: Story = {
   render: () => (
     <div style={{ width: 640 }}>
       <DataTable columns={COLUMNS} data={DATA} rowKey={(r) => r.email} onRowClick={() => {}} />
+    </div>
+  ),
+};
+
+export const WithBulkSelection: Story = {
+  parameters: {
+    docs: { description: { story: "selectable + bulkActions — check a row (or header checkbox for all) to reveal the floating action bar." } },
+  },
+  render: () => (
+    <div style={{ width: 640 }}>
+      <DataTable
+        columns={COLUMNS}
+        data={DATA}
+        rowKey={(r) => r.email}
+        onRowClick={() => {}}
+        selectable
+        bulkActions={[
+          { label: "Archive", icon: Archive, onClick: (rows) => alert(`Archive: ${rows.map((r) => r.name).join(", ")}`) },
+          { label: "Delete", icon: Trash2, variant: "destructive", onClick: (rows) => alert(`Delete: ${rows.map((r) => r.name).join(", ")}`) },
+        ]}
+      />
+    </div>
+  ),
+};
+
+const MANY_ROWS: Row[] = Array.from({ length: 34 }, (_, i) => ({
+  name: `Member ${i + 1}`,
+  email: `member${i + 1}@evergreen.com`,
+  role: i === 0 ? "Owner" : i % 5 === 0 ? "Admin" : "Member",
+  joined: "2025",
+}));
+
+export const WithPagination: Story = {
+  parameters: {
+    docs: { description: { story: "pageSize — 34 rows at 10/page. Pagination is client-side; pass pageSize to opt in." } },
+  },
+  render: () => (
+    <div style={{ width: 640 }}>
+      <DataTable columns={COLUMNS} data={MANY_ROWS} rowKey={(r) => r.email} pageSize={10} />
     </div>
   ),
 };
