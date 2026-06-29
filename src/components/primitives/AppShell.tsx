@@ -12,9 +12,14 @@
 //   >
 //     {/* page content */}
 //   </AppShell>
+//
+// Responsive: below md, the persistent sidebar collapses into a hamburger-
+// triggered slide-over drawer (left edge, overlay, closes on backdrop click
+// or on navigating). Same SidebarContent renders in both places so desktop
+// and mobile never drift out of sync with each other.
 
 import * as React from "react";
-import { ChevronDown, Search, LogOut, Settings as SettingsIcon, User as UserIcon } from "lucide-react";
+import { ChevronDown, Search, LogOut, Settings as SettingsIcon, User as UserIcon, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -61,81 +66,63 @@ export function AppShell({
   pageTitle, topbarActions, onSearch,
   children,
 }: AppShellProps) {
-  const mainItems = items.filter((i) => i.section !== "footer");
-  const footerItems = items.filter((i) => i.section === "footer");
+  const [mobileNavOpen, setMobileNavOpen] = React.useState(false);
+
+  function handleNavigate(key: string) {
+    onNavigate(key);
+    setMobileNavOpen(false);
+  }
 
   return (
-    <div className="flex h-full bg-background">
-      {/* Sidebar */}
-      <div className="w-60 shrink-0 border-r border-border/40 bg-card flex flex-col">
-        <div className="h-14 shrink-0 flex items-center px-3 border-b border-border/40">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-2 rounded-lg px-2 py-1.5 -ml-2 hover:bg-accent/60 transition-colors min-w-0 flex-1">
-                <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">
-                  {WorkspaceIcon ? <WorkspaceIcon className="h-4 w-4" /> : <span className="text-xs font-bold">{workspaceName.charAt(0)}</span>}
-                </div>
-                <span className="text-sm font-semibold truncate flex-1 text-left">{workspaceName}</span>
-                <ChevronDown className="h-3.5 w-3.5 text-muted-foreground/70 shrink-0" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-56">
-              <DropdownMenuLabel>Workspaces</DropdownMenuLabel>
-              <DropdownMenuItem>{workspaceName}</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-
-        <nav className="flex-1 overflow-y-auto px-2.5 py-3 space-y-0.5">
-          {mainItems.map((item) => (
-            <NavButton key={item.key} item={item} active={activeItem === item.key} onClick={() => onNavigate(item.key)} />
-          ))}
-        </nav>
-
-        {footerItems.length > 0 && (
-          <div className="px-2.5 py-2 border-t border-border/40 space-y-0.5">
-            {footerItems.map((item) => (
-              <NavButton key={item.key} item={item} active={activeItem === item.key} onClick={() => onNavigate(item.key)} />
-            ))}
-          </div>
-        )}
-
-        <div className="px-2.5 py-2 border-t border-border/40">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="w-full flex items-center gap-2.5 rounded-lg px-2 py-1.5 hover:bg-accent/60 transition-colors">
-                <Avatar className="h-7 w-7">
-                  {user.avatarUrl && <AvatarImage src={user.avatarUrl} alt={user.name} />}
-                  <AvatarFallback className="text-[10px]">{user.name.charAt(0).toUpperCase()}</AvatarFallback>
-                </Avatar>
-                <span className="text-sm font-medium truncate flex-1 text-left">{user.name}</span>
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-56">
-              <DropdownMenuItem>
-                <UserIcon className="h-3.5 w-3.5 mr-2" /> Profile
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <SettingsIcon className="h-3.5 w-3.5 mr-2" /> Settings
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={onLogout} className="text-destructive">
-                <LogOut className="h-3.5 w-3.5 mr-2" /> Log out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+    <div className="flex h-full bg-background relative">
+      {/* Desktop sidebar — hidden below md, where the hamburger drawer takes over */}
+      <div className="hidden md:flex w-60 shrink-0 border-r border-border/40 bg-card flex-col">
+        <SidebarContent
+          items={items} activeItem={activeItem} onNavigate={handleNavigate}
+          workspaceName={workspaceName} workspaceIcon={WorkspaceIcon}
+          user={user} onLogout={onLogout}
+        />
       </div>
+
+      {/* Mobile drawer */}
+      {mobileNavOpen && (
+        <div className="md:hidden fixed inset-0 z-50 flex">
+          <div className="absolute inset-0 bg-foreground/20" onClick={() => setMobileNavOpen(false)} />
+          <div className="relative w-64 max-w-[80vw] bg-card border-r border-border/40 flex flex-col animate-in slide-in-from-left duration-200">
+            <button
+              onClick={() => setMobileNavOpen(false)}
+              aria-label="Close menu"
+              className="absolute right-2 top-2 h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+            >
+              <X className="h-4 w-4" />
+            </button>
+            <SidebarContent
+              items={items} activeItem={activeItem} onNavigate={handleNavigate}
+              workspaceName={workspaceName} workspaceIcon={WorkspaceIcon}
+              user={user} onLogout={onLogout}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Main column */}
       <div className="flex-1 flex flex-col min-w-0">
-        <div className="h-14 shrink-0 border-b border-border/40 px-6 flex items-center justify-between gap-4">
-          <h1 className="text-base font-semibold truncate">{pageTitle}</h1>
-          <div className="flex items-center gap-2">
+        <div className="h-14 shrink-0 border-b border-border/40 px-4 md:px-6 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2 min-w-0">
+            <button
+              onClick={() => setMobileNavOpen(true)}
+              aria-label="Open menu"
+              className="md:hidden h-8 w-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors shrink-0"
+            >
+              <Menu className="h-4 w-4" />
+            </button>
+            <h1 className="text-base font-semibold truncate">{pageTitle}</h1>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
             {onSearch && (
               <button
                 onClick={onSearch}
-                className="inline-flex items-center gap-2 rounded-lg border border-border/50 bg-muted/40 px-3 py-1.5 text-xs text-muted-foreground hover:bg-muted/70 transition-colors"
+                className="hidden sm:inline-flex items-center gap-2 rounded-lg border border-border/50 bg-muted/40 px-3 py-1.5 text-xs text-muted-foreground hover:bg-muted/70 transition-colors"
               >
                 <Search className="h-3.5 w-3.5" />
                 Search
@@ -148,6 +135,77 @@ export function AppShell({
         <div className="flex-1 overflow-auto">{children}</div>
       </div>
     </div>
+  );
+}
+
+function SidebarContent({
+  items, activeItem, onNavigate,
+  workspaceName, workspaceIcon: WorkspaceIcon,
+  user, onLogout,
+}: Pick<AppShellProps, "items" | "activeItem" | "onNavigate" | "workspaceName" | "workspaceIcon" | "user" | "onLogout">) {
+  const mainItems = items.filter((i) => i.section !== "footer");
+  const footerItems = items.filter((i) => i.section === "footer");
+
+  return (
+    <>
+      <div className="h-14 shrink-0 flex items-center px-3 border-b border-border/40">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="flex items-center gap-2 rounded-lg px-2 py-1.5 -ml-2 hover:bg-accent/60 transition-colors min-w-0 flex-1">
+              <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                {WorkspaceIcon ? <WorkspaceIcon className="h-4 w-4" /> : <span className="text-xs font-bold">{workspaceName.charAt(0)}</span>}
+              </div>
+              <span className="text-sm font-semibold truncate flex-1 text-left">{workspaceName}</span>
+              <ChevronDown className="h-3.5 w-3.5 text-muted-foreground/70 shrink-0" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-56">
+            <DropdownMenuLabel>Workspaces</DropdownMenuLabel>
+            <DropdownMenuItem>{workspaceName}</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      <nav className="flex-1 overflow-y-auto px-2.5 py-3 space-y-0.5">
+        {mainItems.map((item) => (
+          <NavButton key={item.key} item={item} active={activeItem === item.key} onClick={() => onNavigate(item.key)} />
+        ))}
+      </nav>
+
+      {footerItems.length > 0 && (
+        <div className="px-2.5 py-2 border-t border-border/40 space-y-0.5">
+          {footerItems.map((item) => (
+            <NavButton key={item.key} item={item} active={activeItem === item.key} onClick={() => onNavigate(item.key)} />
+          ))}
+        </div>
+      )}
+
+      <div className="px-2.5 py-2 border-t border-border/40">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="w-full flex items-center gap-2.5 rounded-lg px-2 py-1.5 hover:bg-accent/60 transition-colors">
+              <Avatar className="h-7 w-7">
+                {user.avatarUrl && <AvatarImage src={user.avatarUrl} alt={user.name} />}
+                <AvatarFallback className="text-[10px]">{user.name.charAt(0).toUpperCase()}</AvatarFallback>
+              </Avatar>
+              <span className="text-sm font-medium truncate flex-1 text-left">{user.name}</span>
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-56">
+            <DropdownMenuItem>
+              <UserIcon className="h-3.5 w-3.5 mr-2" /> Profile
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <SettingsIcon className="h-3.5 w-3.5 mr-2" /> Settings
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={onLogout} className="text-destructive">
+              <LogOut className="h-3.5 w-3.5 mr-2" /> Log out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </>
   );
 }
 
