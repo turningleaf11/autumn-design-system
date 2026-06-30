@@ -97,7 +97,7 @@ function ProjectDetailDemo() {
   return (
     <div
       className="border border-border/40 rounded-xl overflow-hidden bg-background"
-      style={{ width: 1140, height: 700, display: "flex", flexDirection: "column" }}
+      style={{ width: 1200, height: 700, display: "flex", flexDirection: "column" }}
     >
       <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
 
@@ -323,7 +323,7 @@ function ProjectDetailDemo() {
             No separate Messages tab needed. ──────────────────────────── */}
         <aside
           className="border-l border-border/40 bg-card/20 flex flex-col overflow-hidden"
-          style={{ width: 340, minWidth: 340 }}
+          style={{ width: 400, minWidth: 400 }}
         >
           {/* Feed */}
           <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
