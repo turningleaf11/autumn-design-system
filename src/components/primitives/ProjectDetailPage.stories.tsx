@@ -1,17 +1,18 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import {
-  ChevronLeft, FolderOpen, Users, Calendar, Target, Crown, Plus,
+  FolderOpen, Calendar, Target, Crown, Plus, Link2,
   LayoutDashboard, CheckSquare, PenLine, FileText, MessageSquare,
   FileSignature, Paperclip, Flag,
 } from "lucide-react";
-import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "../ui/tabs";
 import { DataTableShell, DataTableHeader, DataTableRow } from "../ui/data-table-shell";
 import { StatusPill } from "./StatusPill";
 import { PriorityPill } from "./PriorityPill";
 import { AvatarStack, type AvatarStackPerson } from "./AvatarStack";
+import { CollapsibleNotes } from "./CollapsibleNotes";
+import { QuickAddPopover } from "./QuickAddPopover";
 import { cn } from "@/lib/utils";
 
 const meta: Meta = {
@@ -75,29 +76,28 @@ function ProjectDetailDemo() {
   return (
     <div className="border border-border/40 rounded-xl overflow-hidden bg-background" style={{ width: 980, height: 640, display: "flex", flexDirection: "column" }}>
       <div className="flex-1 overflow-y-auto">
-        <div className="px-6 py-5 max-w-[920px] mx-auto">
-          {/* Minor back-nav — not competing with the title for visual weight */}
-          <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground mb-3 -ml-1">
-            <ChevronLeft className="h-3.5 w-3.5" /> Projects
-          </button>
-
-          {/* Header — project name is the dominant element */}
-          <div className="flex items-center gap-2 mb-3">
-            <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">
-              <FolderOpen className="h-4 w-4" />
+        <div className="px-6 pt-4 pb-5 max-w-[920px] mx-auto">
+          {/* Header — project name is the dominant element. No back-nav
+              line: that lives in sidebar/browser back, not the page body. */}
+          <div className="flex items-center justify-between gap-3 mb-2">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                <FolderOpen className="h-4 w-4" />
+              </div>
+              <h1 className="text-2xl font-bold leading-tight truncate">Property acquisition</h1>
             </div>
-            <h1 className="text-2xl font-bold leading-tight">Property acquisition</h1>
+            <div className="flex items-center gap-2 shrink-0">
+              <AvatarStack people={TEAM} size="sm" max={4} />
+              <button title="Copy link" className="h-7 w-7 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-accent/60 transition-colors">
+                <Link2 className="h-3.5 w-3.5" />
+              </button>
+            </div>
           </div>
 
-          <div className="flex items-center gap-2 flex-wrap mb-6 text-sm">
+          <div className="flex items-center gap-2 flex-wrap mb-5 text-sm">
             <StatusPill kind="project" value="in_progress" onChange={() => {}} />
             <span className="text-muted-foreground/30">·</span>
             <PriorityPill value="high" size="sm" onChange={() => {}} />
-            <span className="text-muted-foreground/30">·</span>
-            <button className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground h-7 px-2 rounded-md hover:bg-accent/50">
-              <AvatarStack people={TEAM} size="sm" max={3} />
-              <span>Team</span>
-            </button>
             <span className="text-muted-foreground/30">·</span>
             <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground h-7 px-2 rounded-md hover:bg-accent/50">
               <Calendar className="h-3 w-3" /> Jul 30, 2026
@@ -133,11 +133,10 @@ function ProjectDetailDemo() {
               <div className="flex gap-8">
                 <div className="flex-1 min-w-0 space-y-7">
                   <section>
-                    <h3 className="text-sm font-semibold mb-2">Project description</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      Tracks a single real estate deal from initial due diligence through closing.
-                      Centralizes tasks, documents, and milestones for the acquisition team.
-                    </p>
+                    <CollapsibleNotes
+                      content="<p>Tracks a single real estate deal from initial due diligence through closing. Centralizes tasks, documents, and milestones for the acquisition team.</p>"
+                      onChange={() => {}}
+                    />
                   </section>
 
                   <section>
@@ -249,9 +248,11 @@ function ProjectDetailDemo() {
                 places it shows up — not a parallel, divergent table. */}
             <TabsContent value="tasks" className="mt-0">
               <div className="flex items-center justify-between mb-3">
-                <Button size="sm" variant="outline">
-                  <Plus className="h-3.5 w-3.5 mr-1" /> Add task
-                </Button>
+                <QuickAddPopover
+                  triggerLabel="Add task"
+                  placeholder="Task name…"
+                  onAdd={(title) => setTasks((prev) => [...prev, { id: crypto.randomUUID(), title, status: "todo", priority: "medium", section: sections[0] || "To Do", tag: "Operations" }])}
+                />
               </div>
               <div className="space-y-5">
                 {sections.map((section) => (
