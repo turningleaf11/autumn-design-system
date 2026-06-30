@@ -297,7 +297,6 @@ function TaskPageDemo() {
                       />
                     </div>
                   </div>
-                  <p className="text-muted-foreground">{peek.description}</p>
                 </div>
               ),
             },
@@ -320,6 +319,16 @@ function TaskPageDemo() {
               value: "notes",
               label: "Notes",
               content: <RichTextEditor borderless showToolbar minHeight="280px" placeholder="Add notes…" />,
+            },
+            {
+              value: "attachments",
+              label: "Attachments",
+              content: (
+                <div className="flex flex-col items-center justify-center text-center py-10 text-sm text-muted-foreground">
+                  <p>No attachments yet.</p>
+                  <p className="text-xs mt-1">Attachments aren't designed yet — placeholder for the upcoming pattern.</p>
+                </div>
+              ),
             },
           ]}
         />
