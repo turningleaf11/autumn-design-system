@@ -7,6 +7,8 @@ const THEME_CLASS: Record<string, string> = {
   "default-dark": "dark",
   "midnight-slate": "theme-midnight",
   "warm-sand": "theme-warm-sand",
+  "graphite": "theme-graphite",
+  "naval": "theme-naval",
 };
 
 const withTheme = (Story: any, context: any) => {
@@ -43,6 +45,8 @@ const preview: Preview = {
           { value: "default-dark", title: "Default — Dark" },
           { value: "midnight-slate", title: "Midnight Slate" },
           { value: "warm-sand", title: "Warm Sand" },
+          { value: "graphite", title: "Graphite" },
+          { value: "naval", title: "Naval" },
         ],
         showName: true,
         dynamicTitle: true,

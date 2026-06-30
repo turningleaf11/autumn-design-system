@@ -222,6 +222,106 @@
   --ai-foreground: 0 0% 100%;
 }
 
+/* ── Theme: Graphite ─────────────────────────────────────────────
+   Carbon-black canvas, verdigris accent. Always dark — no light variant.
+   Apply .theme-graphite to <html> to activate. */
+.theme-graphite {
+  --background: 0 0% 13%;             /* #222222 — carbon black */
+  --foreground: 0 0% 96%;             /* #F5F5F5 — white smoke */
+  --card: 0 0% 18%;                   /* #2E2E2E */
+  --card-foreground: 0 0% 96%;
+  --popover: 0 0% 21%;                /* #363636 */
+  --popover-foreground: 0 0% 96%;
+  --primary: 177 30% 39%;             /* #46827D — verdigris */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 0 0% 20%;
+  --secondary-foreground: 0 0% 96%;
+  --muted: 0 0% 20%;
+  --muted-foreground: 0 0% 60%;       /* #999999 */
+  --accent: 0 0% 23%;
+  --accent-foreground: 0 0% 96%;
+  --destructive: 0 62% 50%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 0 0% 23%;                 /* #3A3A3A */
+  --input: 0 0% 27%;                  /* #444444 */
+  --ring: 177 30% 42%;                /* #6AADA7 — accent hi for focus rings */
+  --radius: 0.875rem;
+  --sidebar-background: 0 0% 10%;    /* #1A1A1A */
+  --sidebar-foreground: 0 0% 70%;
+  --sidebar-primary: 177 30% 39%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 0 0% 18%;
+  --sidebar-accent-foreground: 0 0% 96%;
+  --sidebar-border: 0 0% 20%;
+  --sidebar-ring: 177 30% 42%;
+  --success: 150 42% 50%;
+  --success-foreground: 0 0% 100%;
+  --warning: 40 78% 56%;
+  --warning-foreground: 0 0% 100%;
+  --info: 177 30% 55%;                /* verdigris-family info tint */
+  --info-foreground: 0 0% 100%;
+  --ai: 258 65% 66%;
+  --ai-foreground: 0 0% 100%;
+}
+
+.theme-graphite .ambient-backdrop {
+  background:
+    radial-gradient(circle at 15% 10%, hsl(177 30% 39% / 0.14), transparent 45%),
+    radial-gradient(circle at 85% 20%, hsl(177 30% 42% / 0.08), transparent 50%),
+    radial-gradient(circle at 50% 110%, hsl(177 30% 39% / 0.06), transparent 55%),
+    hsl(var(--background));
+}
+
+/* ── Theme: Naval ────────────────────────────────────────────────
+   Ink-black canvas, steel-blue primary, alice-blue highlights.
+   Always dark — no light variant. Apply .theme-naval to <html> to activate. */
+.theme-naval {
+  --background: 210 92% 6%;           /* #020F18 — ink black */
+  --foreground: 207 89% 92%;          /* #D8EFFD — alice blue */
+  --card: 213 72% 9%;                 /* #081523 — prussian blue */
+  --card-foreground: 207 89% 92%;
+  --popover: 213 65% 12%;             /* #0D1E30 */
+  --popover-foreground: 207 89% 92%;
+  --primary: 207 71% 54%;             /* #3797DC — steel blue */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 213 65% 12%;
+  --secondary-foreground: 207 89% 92%;
+  --muted: 213 65% 12%;
+  --muted-foreground: 205 28% 47%;    /* #5E8499 */
+  --accent: 213 58% 12%;
+  --accent-foreground: 207 89% 92%;
+  --destructive: 0 62% 50%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 213 62% 13%;              /* #0D2236 */
+  --input: 213 55% 17%;               /* #163347 */
+  --ring: 197 72% 73%;                /* #86D5E9 — highlight blue for focus rings */
+  --radius: 0.875rem;
+  --sidebar-background: 210 100% 3%;  /* #000A10 */
+  --sidebar-foreground: 207 60% 70%;
+  --sidebar-primary: 207 71% 54%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 213 65% 11%;
+  --sidebar-accent-foreground: 207 89% 92%;
+  --sidebar-border: 213 62% 10%;
+  --sidebar-ring: 197 72% 73%;
+  --success: 150 48% 45%;
+  --success-foreground: 0 0% 100%;
+  --warning: 40 72% 50%;
+  --warning-foreground: 0 0% 100%;
+  --info: 197 72% 73%;                /* #86D5E9 — highlight blue doubles as info */
+  --info-foreground: 210 92% 6%;      /* ink text on light info fills */
+  --ai: 258 65% 66%;
+  --ai-foreground: 0 0% 100%;
+}
+
+.theme-naval .ambient-backdrop {
+  background:
+    radial-gradient(circle at 20% 5%, hsl(207 71% 54% / 0.18), transparent 45%),
+    radial-gradient(circle at 88% 20%, hsl(197 72% 73% / 0.10), transparent 50%),
+    radial-gradient(circle at 50% 110%, hsl(207 71% 54% / 0.08), transparent 60%),
+    hsl(var(--background));
+}
+
 @layer base {
   html {
     font-size: 15px;

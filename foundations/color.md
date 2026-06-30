@@ -53,6 +53,20 @@ A deep navy dark mode designed for focused work.
 - Card: `#161B22`
 - Accent: electric indigo that stays vibrant on dark backgrounds
 
+### Graphite
+A carbon-black dark mode with a verdigris (oxidized copper) accent. Designed for focused ops work with an industrial character.
+- Background: `#222222` (Carbon Black)
+- Primary: `#46827D` (Verdigris) — used for buttons, active nav, CTAs
+- Accent hi: `#6AADA7` — hover states, focus rings, avatar fills (lighter verdigris tint)
+- Card: `#2E2E2E`, Sidebar: `#1A1A1A`
+
+### Naval
+A deep ink-black dark mode with a two-blue system for nautical/analytical environments.
+- Background: `#020F18` (Ink Black), Sidebar: `#000A10`
+- Primary: `#3797DC` (Steel Blue) — interactive elements, holds white text at AA contrast
+- Highlight: `#86D5E9` (Alice Blue) — links, focus rings, mention chips, subtle tints
+- Card: `#081523` (Prussian Blue)
+
 ### Warm Sand
 A warm light mode for a grounded, premium feel.
 - Background: `#FAF7F2` (off-white with warmth)
