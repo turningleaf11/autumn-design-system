@@ -14,7 +14,7 @@ import { EntityCard } from "./EntityCard";
 import { EntityViewTabs, type ViewType } from "./EntityViewTabs";
 import { StatusPill } from "./StatusPill";
 import { PriorityPill } from "./PriorityPill";
-import { CollapsibleNotes } from "./CollapsibleNotes";
+import { RichTextEditor } from "../ui/rich-text-editor";
 import { FilterMenu, matchesFilters, type FilterState } from "./FilterMenu";
 import { DatePicker } from "../ui/date-picker";
 import { cn } from "@/lib/utils";
@@ -459,13 +459,15 @@ function TaskPageDemo() {
               </div>
 
               <section className="mb-5">
-                <CollapsibleNotes
-                  content={peek.notes || peek.description}
-                  onChange={(html) => updateTask(peek.id, { notes: html })}
-                  placeholder="Add a description, plans, context…"
-                  label="Details"
-                  collapsedHeight={140}
-                />
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Details</h3>
+                <div className="overflow-y-auto rounded-md border border-transparent hover:border-border/30 focus-within:border-border/50 transition-colors" style={{ maxHeight: 180 }}>
+                  <RichTextEditor
+                    content={peek.notes || peek.description}
+                    onChange={(html) => updateTask(peek.id, { notes: html })}
+                    placeholder="Add a description, plans, context…"
+                    borderless
+                  />
+                </div>
               </section>
 
               <section className="mb-5">
