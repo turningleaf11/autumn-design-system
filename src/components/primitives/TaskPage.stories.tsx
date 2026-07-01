@@ -458,8 +458,8 @@ function TaskPageDemo() {
                 </FieldRow>
               </div>
 
-              <section className="mb-5">
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Details</h3>
+              <section className="mb-7">
+                <h3 className="text-sm font-semibold text-foreground mb-2">Details</h3>
                 <div className="overflow-y-auto rounded-md border border-transparent hover:border-border/30 focus-within:border-border/50 transition-colors" style={{ maxHeight: 180 }}>
                   <RichTextEditor
                     content={peek.notes || peek.description}
@@ -470,17 +470,22 @@ function TaskPageDemo() {
                 </div>
               </section>
 
-              <section className="mb-5">
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1.5">
-                  Subtasks {peek.subtasks.length > 0 && (
-                    <span className="text-muted-foreground/70 normal-case font-normal">
-                      ({peek.subtasks.filter((s) => s.done).length}/{peek.subtasks.length})
-                    </span>
-                  )}
-                </h3>
+              <section className="mb-7">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+                    Subtasks {peek.subtasks.length > 0 && (
+                      <span className="text-muted-foreground font-normal text-xs">
+                        ({peek.subtasks.filter((s) => s.done).length}/{peek.subtasks.length})
+                      </span>
+                    )}
+                  </h3>
+                  <button className="text-muted-foreground hover:text-foreground transition-colors">
+                    <Plus className="h-3.5 w-3.5" />
+                  </button>
+                </div>
                 <div className="space-y-1">
                   {peek.subtasks.map((s) => (
-                    <div key={s.id} className="flex items-center gap-3 py-1 px-2 -mx-2 rounded-md hover:bg-accent/30 group">
+                    <div key={s.id} className="flex items-center gap-3 py-1.5 px-2 -mx-2 rounded-md hover:bg-accent/30 group">
                       <Checkbox checked={s.done} onCheckedChange={() => toggleSubtask(peek.id, s.id)} />
                       <span className={cn("text-sm flex-1", s.done && "line-through text-muted-foreground")}>{s.label}</span>
                       <button className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-opacity" onClick={() => removeSubtask(peek.id, s.id)}>
@@ -503,9 +508,9 @@ function TaskPageDemo() {
                 </div>
               </section>
 
-              <section className="mb-5">
+              <section className="mb-7">
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Docs</h3>
+                  <h3 className="text-sm font-semibold text-foreground">Docs</h3>
                   <button className="text-muted-foreground hover:text-foreground transition-colors">
                     <Plus className="h-3.5 w-3.5" />
                   </button>
@@ -517,25 +522,21 @@ function TaskPageDemo() {
                     <span className="text-[11px] text-muted-foreground shrink-0">Jun 28</span>
                     <X className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 shrink-0" />
                   </div>
-                  <button className="w-full flex items-center gap-2 border border-dashed border-border/50 rounded-md px-3 py-2 text-xs text-muted-foreground hover:bg-accent/30 transition-colors">
-                    <Plus className="h-3.5 w-3.5" /> New doc or link existing
-                  </button>
                 </div>
               </section>
 
               <section>
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1.5">
-                  Attachments <Plus className="h-3 w-3 text-muted-foreground/70" />
-                </h3>
-                <div className="flex flex-col items-center justify-center text-center py-6 text-xs text-muted-foreground/70 border border-dashed border-border/50 rounded-lg" title="Not built yet">
-                  <Paperclip className="h-4 w-4 mb-1.5 text-muted-foreground/50" />
-                  No attachments yet
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-sm font-semibold text-foreground">Attachments</h3>
+                  <button className="text-muted-foreground hover:text-foreground transition-colors">
+                    <Plus className="h-3.5 w-3.5" />
+                  </button>
                 </div>
               </section>
             </div>
 
-            {/* Activity — pinned below, takes remaining height, same composer used everywhere else */}
-            <div className="flex-1 min-h-0 border-t border-border/40 flex flex-col overflow-hidden">
+            {/* Activity — accent-tinted, pinned below, same composer used everywhere else */}
+            <div className="flex-1 min-h-0 border-t border-border/40 flex flex-col overflow-hidden bg-primary/[0.03]">
               <TaskActivityThread />
             </div>
           </SheetContent>
