@@ -204,6 +204,7 @@ function ProjectDetailDemo() {
                     <CollapsibleNotes
                       content="<p>Tracks a single real estate deal from initial due diligence through closing. Centralises tasks, documents, and milestones for the acquisition team.</p>"
                       onChange={() => {}}
+                      label="Details"
                     />
                   </section>
 
