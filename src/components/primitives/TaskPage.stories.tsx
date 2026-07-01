@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import {
   CheckSquare, Plus, Search, Clock, Send, Paperclip, Calendar, User,
-  CheckCircle2, X, Flag, Folder, Check, FileText, ExternalLink,
+  CheckCircle2, X, Flag, Folder, Check, FileText, ExternalLink, ArrowUpDown,
 } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -128,26 +128,50 @@ function FieldRow({ icon: Icon, label, children }: { icon: any; label: string; c
   );
 }
 
-// Mock activity/comments thread — stands in for ActivityPanel (an app-level,
-// Supabase-backed component). Uses the same composer affordances (attach,
-// send) and size as the rest of the app — the task peek pins this at the
-// bottom, sharing remaining height with the scrollable content above it,
-// rather than capping it to a small fixed box.
-function TaskActivityThread() {
+// Mock inline activity section — mirrors ActivityPanel's `inline` mode.
+// Grows with content; composer is rendered separately below by the sheet.
+function TaskActivityInline({ filter, onFilterChange, sortAsc, onSortToggle }: {
+  filter: "comments" | "all";
+  onFilterChange: (f: "comments" | "all") => void;
+  sortAsc: boolean;
+  onSortToggle: () => void;
+}) {
+  const visible = filter === "comments"
+    ? MOCK_ACTIVITY.filter((a) => a.kind === "comment")
+    : MOCK_ACTIVITY;
+  const sorted = sortAsc ? visible : [...visible].reverse();
+
   return (
-    <div className="flex flex-col h-full">
-      <div className="px-4 pt-3 pb-2 shrink-0">
-        <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Activity</span>
+    <div>
+      <div className="flex items-center border-b border-border/40 px-3">
+        {(["comments", "all"] as const).map((f) => (
+          <button
+            key={f}
+            onClick={() => onFilterChange(f)}
+            className={cn(
+              "h-9 mr-5 text-xs font-medium border-b-2 -mb-px transition-colors",
+              filter === f
+                ? "border-foreground text-foreground"
+                : "border-transparent text-muted-foreground hover:text-foreground",
+            )}
+          >
+            {f === "comments" ? "Comments" : "All activity"}
+          </button>
+        ))}
+        <button onClick={onSortToggle} className="ml-auto flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
+          <ArrowUpDown className="h-3 w-3" /> {sortAsc ? "Oldest" : "Newest"}
+        </button>
       </div>
-      <div className="flex-1 min-h-0 overflow-y-auto px-4 space-y-3 pb-2">
-        {MOCK_ACTIVITY.map((a) =>
+      <div className="px-3 py-3 space-y-4">
+        {sorted.map((a) =>
           a.kind === "event" ? (
-            <div key={a.id} className="text-xs text-muted-foreground/70">
-              <span className="font-medium text-muted-foreground">{a.author}</span> {a.text} · {a.time}
+            <div key={a.id} className="flex items-start gap-2 text-xs text-muted-foreground py-0.5">
+              <div className="mt-1.5 h-1 w-1 rounded-full bg-muted-foreground/40 shrink-0 ml-2" />
+              <span>{a.author} {a.text} · {a.time}</span>
             </div>
           ) : (
-            <div key={a.id} className="flex gap-2.5 text-sm">
-              <div className="h-6 w-6 rounded-full bg-muted shrink-0 flex items-center justify-center text-[10px] font-medium">
+            <div key={a.id} className="flex gap-3 text-sm">
+              <div className="h-7 w-7 rounded-full bg-primary/10 shrink-0 flex items-center justify-center text-[10px] font-semibold text-primary">
                 {a.author.charAt(0)}
               </div>
               <div className="flex-1 min-w-0">
@@ -161,17 +185,23 @@ function TaskActivityThread() {
           ),
         )}
       </div>
-      <div className="shrink-0 border-t border-border/40 px-3 py-2 flex items-center gap-2">
-        <button className="text-muted-foreground hover:text-foreground transition-colors">
-          <Paperclip className="h-3.5 w-3.5" />
-        </button>
-        <input
-          placeholder="Leave a comment…"
-          className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground/50"
-        />
-        <button className="text-muted-foreground hover:text-primary transition-colors">
-          <Send className="h-3.5 w-3.5" />
-        </button>
+    </div>
+  );
+}
+
+// Mock pinned composer — mirrors ActivityComposer appearance.
+function TaskComposerMock() {
+  return (
+    <div className="border-t border-border/40 bg-muted/40 px-3 pt-3 pb-3">
+      <div className="flex items-start gap-2 border border-border/60 rounded-xl bg-background p-2">
+        <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-semibold text-primary shrink-0 mt-0.5">A</div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm text-muted-foreground/50 py-1.5 px-1">Leave a comment…</p>
+          <div className="flex items-center gap-2 pt-1.5 border-t border-border/40 mt-1">
+            <button className="text-muted-foreground hover:text-foreground"><Paperclip className="h-3.5 w-3.5" /></button>
+            <button className="text-muted-foreground hover:text-foreground"><Send className="h-3.5 w-3.5" /></button>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -184,6 +214,8 @@ function TaskPageDemo() {
   const [peekId, setPeekId] = useState<string | null>(null);
   const [filters, setFilters] = useState<FilterState>({});
   const [newSubtask, setNewSubtask] = useState("");
+  const [activityFilter, setActivityFilter] = useState<"comments" | "all">("comments");
+  const [activitySortAsc, setActivitySortAsc] = useState(true);
 
   const visibleTasks = tasks.filter((t) => matchesFilters(t, FILTER_FIELDS, filters));
   const peek = tasks.find((t) => t.id === peekId) ?? null;
@@ -381,7 +413,7 @@ function TaskPageDemo() {
               </button>
             </div>
 
-            <div className="overflow-y-auto px-5 pb-5" style={{ maxHeight: "55%" }}>
+            <div className="flex-1 overflow-y-auto px-5 pb-5">
               <input
                 value={peek.title}
                 onChange={(e) => updateTask(peek.id, { title: e.target.value })}
@@ -509,12 +541,9 @@ function TaskPageDemo() {
               </section>
 
               <section className="mb-7">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-semibold text-foreground">Docs</h3>
-                  <button className="text-muted-foreground hover:text-foreground transition-colors">
-                    <Plus className="h-3.5 w-3.5" />
-                  </button>
-                </div>
+                <h3 className="text-sm font-semibold text-foreground mb-2 flex items-center gap-2">
+                  Docs <button className="text-muted-foreground hover:text-foreground transition-colors"><Plus className="h-3.5 w-3.5" /></button>
+                </h3>
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2.5 border border-border/50 rounded-md px-3 py-2 group">
                     <FileText className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
@@ -526,19 +555,24 @@ function TaskPageDemo() {
               </section>
 
               <section>
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-semibold text-foreground">Attachments</h3>
-                  <button className="text-muted-foreground hover:text-foreground transition-colors">
-                    <Plus className="h-3.5 w-3.5" />
-                  </button>
-                </div>
+                <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                  Attachments <button className="text-muted-foreground hover:text-foreground transition-colors"><Plus className="h-3.5 w-3.5" /></button>
+                </h3>
               </section>
+
+              {/* Activity — grows with content, no fixed height */}
+              <div className="bg-muted/40 border-t border-border/40 mt-8 -mx-5 px-0">
+                <TaskActivityInline
+                  filter={activityFilter}
+                  onFilterChange={setActivityFilter}
+                  sortAsc={activitySortAsc}
+                  onSortToggle={() => setActivitySortAsc((s) => !s)}
+                />
+              </div>
             </div>
 
-            {/* Activity — accent-tinted, pinned below, same composer used everywhere else */}
-            <div className="flex-1 min-h-0 border-t border-border/40 flex flex-col overflow-hidden bg-primary/[0.03]">
-              <TaskActivityThread />
-            </div>
+            {/* Composer — always pinned at the very bottom */}
+            <TaskComposerMock />
           </SheetContent>
         </Sheet>
       )}
