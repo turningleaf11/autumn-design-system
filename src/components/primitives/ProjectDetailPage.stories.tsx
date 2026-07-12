@@ -4,7 +4,7 @@ import {
   FolderOpen, Calendar, Target, Crown, Plus, MoreHorizontal, Link2, Flag,
   Send, Reply, Paperclip as AttachIcon, List, LayoutGrid,
   GanttChartSquare, CalendarDays, Table2, FileText, FormInput, PenLine,
-  MessageSquare, User, Filter, ArrowUpDown, Info, X,
+  MessageSquare, User, Filter, ArrowUpDown, Info, X, Copy, Archive, Trash2,
 } from "lucide-react";
 import { DataTableShell, DataTableHeader, DataTableRow } from "../ui/data-table-shell";
 import { StatusPill } from "./StatusPill";
@@ -120,7 +120,7 @@ function ProjectDetailDemo() {
       style={{ width: 1040, height: 700, display: "flex", flexDirection: "column" }}
     >
       {/* ── Header = the record ─────────────────────────────────────────── */}
-      <div className="px-6 pt-4 shrink-0">
+      <div className="px-6 pt-5 shrink-0">
         <div className="flex items-center gap-2 flex-wrap">
           <button
             title="Back to projects"
@@ -169,12 +169,26 @@ function ProjectDetailDemo() {
                 <MoreHorizontal className="h-4 w-4" />
               </button>
               {moreOpen && (
-                <div className="absolute right-0 top-full mt-1 z-20 w-40 rounded-lg border border-border bg-card shadow-lg p-1">
+                <div className="absolute right-0 top-full mt-1 z-20 w-44 rounded-lg border border-border bg-card shadow-lg p-1">
+                  {[
+                    { label: "Copy link", icon: Link2 },
+                    { label: "Duplicate", icon: Copy },
+                    { label: "Archive", icon: Archive },
+                  ].map(({ label, icon: Icon }) => (
+                    <button
+                      key={label}
+                      onClick={() => setMoreOpen(false)}
+                      className="w-full flex items-center gap-2 text-sm px-2 py-1.5 rounded-md hover:bg-accent text-left"
+                    >
+                      <Icon className="h-3.5 w-3.5" /> {label}
+                    </button>
+                  ))}
+                  <div className="my-1 h-px bg-border/60" />
                   <button
                     onClick={() => setMoreOpen(false)}
-                    className="w-full flex items-center gap-2 text-sm px-2 py-1.5 rounded-md hover:bg-accent text-left"
+                    className="w-full flex items-center gap-2 text-sm px-2 py-1.5 rounded-md hover:bg-accent text-left text-destructive"
                   >
-                    <Link2 className="h-3.5 w-3.5" /> Copy link
+                    <Trash2 className="h-3.5 w-3.5" /> Delete
                   </button>
                 </div>
               )}
@@ -183,7 +197,7 @@ function ProjectDetailDemo() {
         </div>
 
         {/* Quick-glance meta — most-referenced properties inline; the rest live in Details */}
-        <div className="flex items-center gap-4 mt-2 ml-7 text-xs text-muted-foreground">
+        <div className="flex items-center gap-4 mt-3 ml-7 text-xs text-muted-foreground">
           <button className="flex items-center gap-1.5 hover:text-foreground transition-colors">
             <Target className="h-3 w-3" /> Q3 Growth Goals
           </button>
@@ -197,13 +211,13 @@ function ProjectDetailDemo() {
       </div>
 
       {/* ── View row = the container. Purely task-views. ────────────────── */}
-      <div className="flex items-center gap-1 px-6 mt-3 border-b border-border/50 shrink-0">
+      <div className="flex items-center gap-1 px-6 mt-4 border-b border-border/50 shrink-0">
         {BUILT_IN_VIEWS.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
             onClick={() => setView(id)}
             className={cn(
-              "flex items-center gap-1.5 text-sm px-2 pb-2.5 pt-1 border-b-2 transition-colors -mb-px",
+              "flex items-center gap-1.5 text-sm px-2 pb-3 pt-1.5 border-b-2 transition-colors -mb-px",
               view === id ? "border-primary text-foreground font-medium" : "border-transparent text-muted-foreground hover:text-foreground",
             )}
           >
@@ -214,7 +228,7 @@ function ProjectDetailDemo() {
         <div className="relative">
           <button
             onClick={() => setAddViewOpen((o) => !o)}
-            className="flex items-center gap-1 text-sm px-2 pb-2.5 pt-1 text-muted-foreground hover:text-foreground transition-colors"
+            className="flex items-center gap-1 text-sm px-2 pb-3 pt-1.5 text-muted-foreground hover:text-foreground transition-colors"
           >
             <Plus className="h-3.5 w-3.5" /> Add view
           </button>
